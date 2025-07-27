@@ -12,4 +12,6 @@ install the required packages
 Start the project using
 - python3 ./app.py
 
+---
 
+Explore 90+ end-to-end Projects [Generative AI](https://www.projectpro.io/accelerator-program/generative-ai-program)
