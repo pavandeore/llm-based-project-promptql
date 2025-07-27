@@ -14,4 +14,4 @@ Start the project using
 
 ---
 
-Explore 90+ end-to-end Projects [Generative AI](https://www.projectpro.io/accelerator-program/generative-ai-program?utm_source=pawan&utm_medium=udemy)
+Explore 90+ end-to-end [GenAI Projects](https://www.projectpro.io/accelerator-program/generative-ai-program?utm_source=pawan&utm_medium=udemy)
