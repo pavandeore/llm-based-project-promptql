@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Natural Language to SQL</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        form { display: grid; grid-gap: 15px; }
+        label { font-weight: bold; }
+        input, select { padding: 8px; width: 100%; }
+        button { padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .db-options { display: flex; gap: 15px; margin-bottom: 15px; }
+        .db-option { padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; }
+        .db-option.selected { border-color: #007bff; background: #e7f2ff; }
+        .db-option input { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Database Connection</h1>
+    <form method="POST">
+        <div>
+            <label>Database Type:</label>
+            <div class="db-options">
+                <label class="db-option" onclick="selectDbType('postgresql', '5432')">
+                    <input type="radio" name="db_type" value="postgresql" checked> PostgreSQL
+                </label>
+                <label class="db-option" onclick="selectDbType('mysql', '3306')">
+                    <input type="radio" name="db_type" value="mysql"> MySQL
+                </label>
+            </div>
+        </div>
+        
+        <div>
+            <label for="db_host">Host:</label>
+            <input type="text" id="db_host" name="db_host" required value="localhost">
+        </div>
+        
+        <div>
+            <label for="db_port">Port:</label>
+            <input type="text" id="db_port" name="db_port" value="5432" required>
+        </div>
+        
+        <div>
+            <label for="db_name">Database Name:</label>
+            <input type="text" id="db_name" name="db_name" required>
+        </div>
+        
+        <div>
+            <label for="db_user">Username:</label>
+            <input type="text" id="db_user" name="db_user" required>
+        </div>
+        
+        <div>
+            <label for="db_password">Password:</label>
+            <input type="password" id="db_password" name="db_password">
+        </div>
+        
+        <button type="submit">Connect</button>
+    </form>
+
+    <script>
+        function selectDbType(dbType, defaultPort) {
+            document.getElementById('db_port').value = defaultPort;
+            // Update UI to show selected option
+            document.querySelectorAll('.db-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+    </script>
+</body>
+</html>
