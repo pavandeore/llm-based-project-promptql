@@ -1,63 +1,78 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Query Results</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .query { background: #f5f5f5; padding: 15px; margin-bottom: 20px; }
-        .sql { background: #e9f7fe; padding: 15px; margin-bottom: 20px; font-family: monospace; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        .error { color: red; padding: 15px; background: #ffeeee; }
-        button { padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; margin-top: 20px; }
-        button:hover { background: #0056b3; }
-    </style>
-</head>
-<body>
-    <h1>Query Results</h1>
-    
-    {% if error %}
-        <div class="error">
-            <strong>Error:</strong> {{ error }}
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4>Query Results</h4>
+            <a href="{{ url_for('query') }}" class="btn btn-outline-primary">New Query</a>
         </div>
-    {% else %}
-        <div class="query">
-            <strong>Your Query:</strong> {{ query }}
-        </div>
-        
-        <div class="sql">
-            <strong>Generated SQL:</strong><br>
-            {{ sql_query }}
-        </div>
-        
-        {% if rows %}
-            <h2>Results</h2>
-            <table>
-                <thead>
-                    <tr>
-                        {% for column in columns %}
-                            <th>{{ column }}</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in rows %}
-                        <tr>
-                            {% for item in row %}
-                                <td>{{ item }}</td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>No rows returned.</p>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <h5>Error</h5>
+                <p class="mb-0">{{ error }}</p>
+            </div>
+            <a href="{{ url_for('query') }}" class="btn btn-primary">Try Again</a>
+            {% endif %}
+
+        {% if not error %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Query Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Natural Language Query:</strong>
+                        <p class="mt-1">{{ query }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Generated SQL:</strong>
+                        <pre class="mt-1 p-3 bg-light border rounded"><code>{{ sql_query }}</code></pre>
+                    </div>
+                    {% if schema_info %}
+                    <div class="schema-info p-3 rounded">
+                        <strong>Schema Used:</strong>
+                        <pre class="mt-1 mb-0"><code>{{ schema_info }}</code></pre>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if rows %}
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Results ({{ rows|length }} rows)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    {% for column in columns %}
+                                        <th>{{ column }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in rows %}
+                                    <tr>
+                                        {% for value in row %}
+                                            <td>{{ value }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                Query executed successfully but no results were returned.
+            </div>
+            {% endif %}
         {% endif %}
-    {% endif %}
-    
-    <button onclick="window.location.href='/query'">New Query</button>
-    <button onclick="window.location.href='/'">Change Connection</button>
-</body>
-</html>
+    </div>
+</div>
+{% endblock %}

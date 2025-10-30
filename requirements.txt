@@ -1,3 +1,11 @@
+# flask
+# openai
+# python-dotenv
+# sqlalchemy
+# psycopg2-binary
+# pymysql
+# cryptography
+
 flask
 openai
 python-dotenv
@@ -5,3 +13,10 @@ sqlalchemy
 psycopg2-binary
 pymysql
 cryptography
+chromadb
+tokenizers
+numpy
+posthog
+pydantic
+requests
+urllib3
