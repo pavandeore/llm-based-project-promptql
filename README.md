@@ -12,6 +12,16 @@ install the required packages
 Start the project using
 - python3 ./app.py
 
+
+---
+
+Generate Code Flow Diagram with 
+- python3 -m pyflowchart app.py > flowchart.flow   
+
+---
+
+
+
 ---
 
 Explore 90+ end-to-end [GenAI Projects](https://www.projectpro.io/accelerator-program/generative-ai-program?utm_source=pawan&utm_medium=udemy)
@@ -20,12 +30,19 @@ Explore 90+ end-to-end [GenAI Projects](https://www.projectpro.io/accelerator-pr
 
 Vector Embedding version done 
 
-Current API Call Analysis:
-Schema Storage: One-time embedding generation when connecting to database
+---
 
-Query Processing: Two API calls per user query:
+You connect to a database (Postgres/MySQL/SQLite)
 
-Embedding generation for the user query
+It extracts and stores schema info (tables, columns, types)
 
-SQL generation with relevant schema
+It stores that info in a vector database (ChromaDB) using OpenAI embeddings
+
+When a user types a question in plain English, it:
+
+Finds relevant tables using vector search
+
+Asks OpenAI to generate the SQL query
+
+Executes it and displays results in the browser.
 

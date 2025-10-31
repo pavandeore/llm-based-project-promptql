@@ -1,0 +1,4088 @@
+{
+  "admin_course": {
+    "description": "Links administrators to specific courses they manage.",
+    "column_descriptions": {
+      "admin_course_id": "Unique identifier for the admin-course relationship",
+      "admin_id": "Identifier for the administrator",
+      "course_id": "Identifier for the course",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "admin",
+      "course",
+      "management"
+    ]
+  },
+  "answer_attachment": {
+    "description": "Stores attachments related to course answers.",
+    "column_descriptions": {
+      "answer_file_id": "Unique identifier for the answer file",
+      "aws_url": "URL of the file stored in AWS",
+      "file_type": "Type of the file (e.g., image, document)",
+      "course_answer_id": "Identifier for the related course answer",
+      "date_created": "Timestamp when the record was created",
+      "date_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "attachment",
+      "course",
+      "answer"
+    ]
+  },
+  "course_answer": {
+    "description": "Records answers provided by users to course questions.",
+    "column_descriptions": {
+      "course_answer_id": "Unique identifier for the course answer",
+      "course_question_id": "Identifier for the related course question",
+      "user_id": "Identifier for the user who answered",
+      "answer": "The answer text provided by the user",
+      "imag": "Image associated with the answer",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "answer",
+      "course",
+      "user"
+    ]
+  },
+  "course_question": {
+    "description": "Stores questions related to specific courses.",
+    "column_descriptions": {
+      "course_question_id": "Unique identifier for the course question",
+      "course_id": "Identifier for the related course",
+      "user_id": "Identifier for the user who created the question",
+      "batch_id": "Identifier for the batch of students",
+      "faculty_id": "Identifier for the faculty member",
+      "is_visible": "Indicates if the question is visible to users",
+      "question_title": "Title of the question",
+      "question": "The question text",
+      "imag": "Image associated with the question",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "question",
+      "course",
+      "faculty"
+    ]
+  },
+  "badge": {
+    "description": "Stores information about badges awarded to users.",
+    "column_descriptions": {
+      "badge_id": "Unique identifier for the badge",
+      "name": "Name of the badge",
+      "description": "Description of the badge's significance",
+      "date_created": "Timestamp when the badge was created",
+      "last_modified": "Timestamp when the badge was last modified"
+    },
+    "semantic_tags": [
+      "badge",
+      "recognition",
+      "achievement"
+    ]
+  },
+  "blog": {
+    "description": "Contains blog posts related to courses and user engagement.",
+    "column_descriptions": {
+      "blog_id": "Unique identifier for the blog post",
+      "category_id": "Identifier for the blog category",
+      "blog_category_id": "Identifier for the specific blog category",
+      "user_id": "Identifier for the user who created the blog",
+      "course_id": "Identifier for the related course",
+      "title": "Title of the blog post",
+      "keyword": "Keywords associated with the blog post",
+      "blog_image": "Image associated with the blog post",
+      "meta_title": "SEO title for the blog post",
+      "meta_description": "SEO description for the blog post",
+      "meta_keywords": "SEO keywords for the blog post",
+      "preview": "Preview text for the blog post",
+      "article": "Full content of the blog post",
+      "download_url": "URL for downloading related content",
+      "date_created": "Timestamp when the blog post was created",
+      "last_modified": "Timestamp when the blog post was last modified"
+    },
+    "semantic_tags": [
+      "blog",
+      "content",
+      "course"
+    ]
+  },
+  "category": {
+    "description": "Stores categories for organizing courses and content.",
+    "column_descriptions": {
+      "category_id": "Unique identifier for the category",
+      "category_name": "Name of the category",
+      "short_name": "Shortened name for the category",
+      "parent_category_id": "Identifier for the parent category",
+      "url_keyword": "SEO keyword for the category URL",
+      "is_active": "Indicates if the category is active",
+      "is_path": "Indicates if the category is part of a path",
+      "order_number": "Order number for sorting categories",
+      "short_code": "Short code for the category",
+      "meta_tags": "SEO tags for the category",
+      "meta_description": "SEO description for the category",
+      "meta_title": "SEO title for the category",
+      "banner_heading": "Heading for the category banner",
+      "category_description": "Description of the category",
+      "category_image": "Image associated with the category",
+      "date_created": "Timestamp when the category was created",
+      "last_modified": "Timestamp when the category was last modified"
+    },
+    "semantic_tags": [
+      "category",
+      "organization",
+      "content"
+    ]
+  },
+  "blog_category": {
+    "description": "Stores categories for organizing blog posts.",
+    "column_descriptions": {
+      "blog_category_id": "Unique identifier for the blog category",
+      "category_name": "Name of the blog category",
+      "is_active": "Indicates if the category is active",
+      "order_number": "Order number for sorting blog categories",
+      "date_created": "Timestamp when the blog category was created",
+      "last_modified": "Timestamp when the blog category was last modified"
+    },
+    "semantic_tags": [
+      "blog",
+      "category",
+      "organization"
+    ]
+  },
+  "blog_comment": {
+    "description": "Stores comments made by users on blog posts.",
+    "column_descriptions": {
+      "blog_comment_id": "Unique identifier for the blog comment",
+      "blog_id": "Identifier for the related blog post",
+      "user_id": "Identifier for the user who commented",
+      "name": "Name of the user who commented",
+      "blog_question_id": "Identifier for the related blog question",
+      "answer": "The comment text",
+      "date_created": "Timestamp when the comment was created",
+      "last_modified": "Timestamp when the comment was last modified"
+    },
+    "semantic_tags": [
+      "comment",
+      "blog",
+      "user"
+    ]
+  },
+  "blog_question": {
+    "description": "Stores questions related to blog posts.",
+    "column_descriptions": {
+      "blog_question_id": "Unique identifier for the blog question",
+      "blog_id": "Identifier for the related blog post",
+      "question": "The question text",
+      "date_created": "Timestamp when the question was created",
+      "last_modified": "Timestamp when the question was last modified"
+    },
+    "semantic_tags": [
+      "question",
+      "blog",
+      "engagement"
+    ]
+  },
+  "category_filter_type": {
+    "description": "Defines different types of category filters for content organization.",
+    "column_descriptions": {
+      "category_filter_type_id": "Unique identifier for the filter type",
+      "type_name": "Name of the filter type",
+      "is_active": "Indicates if the filter type is currently active",
+      "date_created": "Timestamp when the filter type was created",
+      "last_modified": "Timestamp when the filter type was last modified"
+    },
+    "semantic_tags": [
+      "category",
+      "filter",
+      "type"
+    ]
+  },
+  "certificate": {
+    "description": "Stores information about user certificates for completed courses.",
+    "column_descriptions": {
+      "certificate_id": "Unique identifier for the certificate",
+      "user_id": "Identifier for the user who received the certificate",
+      "course_id": "Identifier for the course associated with the certificate",
+      "license": "License number or code for the certificate",
+      "start_date": "Date when the course started",
+      "end_date": "Date when the course ended",
+      "aws_url": "URL for accessing the certificate on AWS",
+      "last_modified": "Timestamp when the certificate record was last modified",
+      "date_created": "Timestamp when the certificate record was created"
+    },
+    "semantic_tags": [
+      "certificate",
+      "course",
+      "user"
+    ]
+  },
+  "colab_notebooks": {
+    "description": "Holds information about collaborative notebooks for projects.",
+    "column_descriptions": {
+      "notebook_id": "Unique identifier for the notebook",
+      "project_id": "Identifier for the associated project",
+      "notebook_url": "URL to access the notebook",
+      "date_created": "Timestamp when the notebook was created",
+      "last_modified": "Timestamp when the notebook was last modified"
+    },
+    "semantic_tags": [
+      "notebook",
+      "collaboration",
+      "project"
+    ]
+  },
+  "project": {
+    "description": "Contains details about various projects and their attributes.",
+    "column_descriptions": {
+      "project_id": "Unique identifier for the project",
+      "category_id": "Identifier for the project's category",
+      "course_id": "Identifier for the associated course",
+      "title": "Title of the project",
+      "meta_title": "Meta title for SEO purposes",
+      "keyword": "Primary keyword related to the project",
+      "meta_keywords": "Additional keywords for SEO",
+      "short_desc": "Brief description of the project",
+      "meta_description": "Meta description for SEO",
+      "detailed_desc": "In-depth description of the project",
+      "prerequisites": "Requirements needed to undertake the project",
+      "learn": "Skills or knowledge to be gained from the project",
+      "benefits": "Advantages of completing the project",
+      "video_url": "URL to a video related to the project",
+      "voice_recording": "URL to a voice recording related to the project",
+      "price": "Price of the project",
+      "price_inr": "Price of the project in Indian Rupees",
+      "rating": "Average rating of the project",
+      "student_enrolled": "Number of students enrolled in the project",
+      "is_groups": "Indicates if the project can be done in groups",
+      "difficulty_level": "Level of difficulty of the project",
+      "timezone": "Timezone relevant to the project",
+      "project_banner_path": "Path to the project's banner image",
+      "is_active": "Indicates if the project is currently active",
+      "type": "Type/category of the project",
+      "code": "Code associated with the project",
+      "date_created": "Timestamp when the project was created",
+      "last_modified": "Timestamp when the project was last modified",
+      "is_displayed": "Indicates if the project is displayed publicly",
+      "architecture_diagram": "Path to the project's architecture diagram",
+      "intro_video": "URL to an introductory video for the project"
+    },
+    "semantic_tags": [
+      "project",
+      "course",
+      "education"
+    ]
+  },
+  "competition": {
+    "description": "Tracks details about competitions including rules and prizes.",
+    "column_descriptions": {
+      "competition_id": "Unique identifier for the competition",
+      "competition_code": "Code associated with the competition",
+      "title": "Title of the competition",
+      "prize": "Prize awarded for winning the competition",
+      "rules": "Rules governing the competition",
+      "meta_title": "Meta title for SEO purposes",
+      "meta_description": "Meta description for SEO",
+      "meta_keywords": "Keywords related to the competition for SEO",
+      "entries_deadline": "Deadline for entering the competition",
+      "date_created": "Timestamp when the competition was created",
+      "last_modified": "Timestamp when the competition was last modified"
+    },
+    "semantic_tags": [
+      "competition",
+      "event",
+      "prize"
+    ]
+  },
+  "competition_user": {
+    "description": "Links users to the competitions they have entered.",
+    "column_descriptions": {
+      "competition_user_id": "Unique identifier for the competition entry record",
+      "competition_id": "Identifier for the associated competition",
+      "user_id": "Identifier for the user who entered the competition",
+      "date_created": "Timestamp when the entry was created",
+      "last_modified": "Timestamp when the entry was last modified"
+    },
+    "semantic_tags": [
+      "competition",
+      "user",
+      "entry"
+    ]
+  },
+  "course_faculty": {
+    "description": "Associates faculty members with specific courses.",
+    "column_descriptions": {
+      "course_faculty_id": "Unique identifier for the course-faculty association",
+      "course_id": "Identifier for the associated course",
+      "faculty_id": "Identifier for the faculty member",
+      "date_created": "Timestamp when the association was created",
+      "last_modified": "Timestamp when the association was last modified"
+    },
+    "semantic_tags": [
+      "course",
+      "faculty",
+      "association"
+    ]
+  },
+  "course_faq": {
+    "description": "Stores frequently asked questions related to courses.",
+    "column_descriptions": {
+      "course_faq_id": "Unique identifier for the FAQ entry",
+      "course_id": "Identifier for the associated course",
+      "question": "The frequently asked question",
+      "answer": "The answer to the question",
+      "type": "Type/category of the FAQ",
+      "question_order": "Order of the question for display purposes",
+      "is_visible": "Indicates if the FAQ is visible to users",
+      "date_created": "Timestamp when the FAQ was created",
+      "last_modified": "Timestamp when the FAQ was last modified"
+    },
+    "semantic_tags": [
+      "course",
+      "FAQ",
+      "questions"
+    ]
+  },
+  "course_files": {
+    "description": "Holds files related to specific courses.",
+    "column_descriptions": {
+      "course_files_id": "Unique identifier for the course file",
+      "course_id": "Identifier for the associated course",
+      "type": "Type of file (e.g., document, video)",
+      "url": "URL to access the file",
+      "is_active": "Indicates if the file is currently active",
+      "date_created": "Timestamp when the file was created",
+      "last_modified": "Timestamp when the file was last modified"
+    },
+    "semantic_tags": [
+      "course",
+      "files",
+      "resources"
+    ]
+  },
+  "course_jobs": {
+    "description": "Lists job opportunities related to specific courses.",
+    "column_descriptions": {
+      "course_job_id": "Unique identifier for the job entry",
+      "course_id": "Identifier for the associated course",
+      "job_position": "Title of the job position",
+      "job_location": "Location of the job",
+      "company_name": "Name of the company offering the job",
+      "job_desc": "Description of the job responsibilities",
+      "qualification": "Qualifications required for the job",
+      "source": "Source from which the job was posted",
+      "posted_on": "Date when the job was posted",
+      "date_created": "Timestamp when the job entry was created",
+      "last_modified": "Timestamp when the job entry was last modified"
+    },
+    "semantic_tags": [
+      "course",
+      "jobs",
+      "employment"
+    ]
+  },
+  "blog_comment_follow": {
+    "description": "Manages subscriptions to blog comments by users.",
+    "column_descriptions": {
+      "blog_comment_follow_id": "Unique identifier for the comment follow entry",
+      "blog_id": "Identifier for the associated blog post",
+      "name": "Name of the subscriber",
+      "email": "Email address of the subscriber",
+      "subscription_status": "Current status of the subscription",
+      "date_created": "Timestamp when the subscription was created",
+      "last_modified": "Timestamp when the subscription was last updated"
+    },
+    "semantic_tags": [
+      "blog",
+      "comments",
+      "subscription"
+    ]
+  },
+  "blog_quiz": {
+    "description": "Stores quizzes associated with blog posts.",
+    "column_descriptions": {
+      "blog_quiz_id": "Unique identifier for the blog quiz",
+      "blog_id": "Identifier for the associated blog post",
+      "quiz_id": "Identifier for the quiz",
+      "date_created": "Timestamp when the quiz was created",
+      "last_modified": "Timestamp when the quiz was last updated"
+    },
+    "semantic_tags": [
+      "blog",
+      "quiz",
+      "engagement"
+    ]
+  },
+  "blog_subscribe": {
+    "description": "Tracks user subscriptions to the blog.",
+    "column_descriptions": {
+      "blog_subscribe_id": "Unique identifier for the blog subscription",
+      "email": "Email address of the subscriber",
+      "is_subscribed": "Indicates if the user is currently subscribed",
+      "date_created": "Timestamp when the subscription was created",
+      "last_modified": "Timestamp when the subscription was last updated"
+    },
+    "semantic_tags": [
+      "blog",
+      "subscription",
+      "newsletter"
+    ]
+  },
+  "bot_answers": {
+    "description": "Stores answers provided by the bot to user questions.",
+    "column_descriptions": {
+      "bot_answers_id": "Unique identifier for the bot answer",
+      "answer": "The answer text provided by the bot",
+      "bot_questions_id": "Identifier for the associated bot question",
+      "user_id": "Identifier for the user who received the answer"
+    },
+    "semantic_tags": [
+      "bot",
+      "answers",
+      "interaction"
+    ]
+  },
+  "bot_profile_questions": {
+    "description": "Stores profile-related questions for the bot.",
+    "column_descriptions": {
+      "bot_profile_questions_id": "Unique identifier for the profile question",
+      "question": "The text of the profile question",
+      "sequence": "Order of the question in the sequence",
+      "category": "Category of the question",
+      "date_created": "Timestamp when the question was created",
+      "last_modified": "Timestamp when the question was last updated"
+    },
+    "semantic_tags": [
+      "bot",
+      "profile",
+      "questions"
+    ]
+  },
+  "bot_questions": {
+    "description": "Stores questions that the bot can ask users.",
+    "column_descriptions": {
+      "bot_questions_id": "Unique identifier for the bot question",
+      "question": "The text of the question",
+      "type": "Type of the question (e.g., multiple choice)",
+      "sequence": "Order of the question in the sequence",
+      "date_created": "Timestamp when the question was created",
+      "last_modified": "Timestamp when the question was last updated"
+    },
+    "semantic_tags": [
+      "bot",
+      "questions",
+      "interaction"
+    ]
+  },
+  "callback": {
+    "description": "Stores callback requests from users for courses.",
+    "column_descriptions": {
+      "request_id": "Unique identifier for the callback request",
+      "course_id": "Identifier for the requested course",
+      "name": "Name of the user requesting the callback",
+      "mobile": "Mobile number of the user",
+      "email": "Email address of the user",
+      "enquiry": "Details of the user's enquiry",
+      "utm_campaign": "UTM campaign tracking parameter",
+      "utm_source": "UTM source tracking parameter",
+      "utm_medium": "UTM medium tracking parameter",
+      "type": "Type of callback request",
+      "page": "Page from which the request was made",
+      "country": "Country of the user",
+      "referrer": "Referrer URL of the request",
+      "date_created": "Timestamp when the request was created",
+      "last_modified": "Timestamp when the request was last updated"
+    },
+    "semantic_tags": [
+      "callback",
+      "user",
+      "enquiry"
+    ]
+  },
+  "card_trial": {
+    "description": "Tracks trial card information for users.",
+    "column_descriptions": {
+      "card_trial_id": "Unique identifier for the card trial entry",
+      "fingerprint": "Unique fingerprint for the trial card",
+      "date_created": "Timestamp when the trial was created",
+      "last_modified": "Timestamp when the trial was last updated"
+    },
+    "semantic_tags": [
+      "trial",
+      "card",
+      "user"
+    ]
+  },
+  "category_course": {
+    "description": "Associates courses with their respective categories.",
+    "column_descriptions": {
+      "category_course_id": "Unique identifier for the category-course association",
+      "category_id": "Identifier for the associated category",
+      "course_id": "Identifier for the associated course",
+      "order_number": "Order number for display purposes",
+      "date_created": "Timestamp when the association was created",
+      "last_modified": "Timestamp when the association was last updated"
+    },
+    "semantic_tags": [
+      "category",
+      "course",
+      "association"
+    ]
+  },
+  "category_detail": {
+    "description": "Stores detailed information about categories.",
+    "column_descriptions": {
+      "category_detail_id": "Unique identifier for the category detail",
+      "category_id": "Identifier for the category",
+      "category_name": "Name of the category",
+      "short_name": "Shortened name for the category",
+      "url_keyword": "Keyword for the category URL",
+      "is_active": "Indicates if the category is active",
+      "meta_tags": "SEO meta tags for the category",
+      "meta_description": "SEO meta description for the category",
+      "meta_title": "SEO meta title for the category",
+      "banner_heading": "Heading for the category banner",
+      "category_description": "Description of the category",
+      "category_image": "Image associated with the category",
+      "type": "Type of the category",
+      "is_present": "Indicates if the category is present",
+      "date_created": "Timestamp when the detail was created",
+      "last_modified": "Timestamp when the detail was last updated"
+    },
+    "semantic_tags": [
+      "category",
+      "detail",
+      "information"
+    ]
+  },
+  "adl_quiz_question": {
+    "description": "Stores questions related to quizzes.",
+    "column_descriptions": {
+      "quiz_question_id": "Unique question identifier",
+      "quiz_id": "Identifier for the associated quiz",
+      "question_id": "Identifier for the specific question",
+      "order": "Order of the question in the quiz",
+      "is_active": "Indicates if the question is active",
+      "date_created": "Timestamp when the question was created",
+      "last_modified": "Timestamp when the question was last modified"
+    },
+    "semantic_tags": [
+      "quiz",
+      "questions",
+      "assessment"
+    ]
+  },
+  "adl_quiz_response": {
+    "description": "Records responses given by users for quiz questions.",
+    "column_descriptions": {
+      "quiz_response_id": "Unique response identifier",
+      "quiz_user_id": "Identifier for the user taking the quiz",
+      "question_id": "Identifier for the question being answered",
+      "answer_id": "Identifier for the selected answer",
+      "date_created": "Timestamp when the response was created",
+      "last_modified": "Timestamp when the response was last modified"
+    },
+    "semantic_tags": [
+      "quiz",
+      "responses",
+      "user"
+    ]
+  },
+  "adl_quiz_user": {
+    "description": "Tracks user participation and scores in quizzes.",
+    "column_descriptions": {
+      "quiz_user_id": "Unique identifier for the quiz user record",
+      "quiz_id": "Identifier for the associated quiz",
+      "user_id": "Identifier for the user taking the quiz",
+      "is_complete": "Indicates if the quiz is completed",
+      "score": "Score achieved by the user in the quiz",
+      "submitted_at": "Timestamp when the quiz was submitted",
+      "answer_viewed": "Indicates if the user has viewed the answers",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "quiz",
+      "user",
+      "scores"
+    ]
+  },
+  "user": {
+    "description": "Stores detailed information about users of the system.",
+    "column_descriptions": {
+      "user_id": "Unique user identifier",
+      "address_id": "Identifier for the user's address",
+      "organization_id": "Identifier for the user's organization",
+      "email": "User's email address",
+      "username": "User's chosen username",
+      "referrer": "Identifier for the user's referrer",
+      "password": "User's password (hashed)",
+      "first_name": "User's first name",
+      "last_name": "User's last name",
+      "phone": "User's phone number",
+      "degree": "User's highest degree",
+      "college": "College attended by the user",
+      "company": "Company where the user works",
+      "experience": "User's work experience",
+      "designation": "User's job title",
+      "linkedin": "User's LinkedIn profile URL",
+      "ip_address": "User's IP address",
+      "country_code": "User's country code",
+      "user_agent": "User's browser user agent",
+      "role_id": "Identifier for the user's role",
+      "is_active": "Indicates if the user account is active",
+      "source": "Source from where the user registered",
+      "verification_code": "Code for user verification",
+      "last_login": "Timestamp of the user's last login",
+      "token": "Authentication token for the user",
+      "date_created": "Timestamp when the user was created",
+      "last_modified": "Timestamp when the user was last modified",
+      "is_linkedin": "Indicates if the user registered via LinkedIn",
+      "session_id": "Identifier for the user's session",
+      "intercom_id": "Identifier for Intercom integration",
+      "leadsquared_id": "Identifier for LeadSquared integration",
+      "is_otp_enabled": "Indicates if OTP is enabled for the user",
+      "is_otp_verified": "Indicates if OTP has been verified",
+      "optin_message": "Message for user opt-in"
+    },
+    "semantic_tags": [
+      "user",
+      "account",
+      "profile"
+    ]
+  },
+  "organization": {
+    "description": "Stores information about organizations using the system.",
+    "column_descriptions": {
+      "organization_id": "Unique organization identifier",
+      "name": "Name of the organization",
+      "licenses": "Licenses held by the organization",
+      "type": "Type of organization",
+      "timezone": "Timezone of the organization",
+      "logo": "Logo of the organization",
+      "date_created": "Timestamp when the organization was created",
+      "last_modified": "Timestamp when the organization was last modified"
+    },
+    "semantic_tags": [
+      "organization",
+      "business",
+      "data"
+    ]
+  },
+  "adl_quiz_topic": {
+    "description": "Associates topics with quizzes.",
+    "column_descriptions": {
+      "quiz_topic_id": "Unique identifier for the quiz topic association",
+      "topic_id": "Identifier for the associated topic",
+      "quiz_id": "Identifier for the associated quiz",
+      "quiz_number": "Number of the quiz in relation to the topic",
+      "date_created": "Timestamp when the association was created",
+      "last_modified": "Timestamp when the association was last modified"
+    },
+    "semantic_tags": [
+      "quiz",
+      "topic",
+      "association"
+    ]
+  },
+  "topic": {
+    "description": "Stores information about topics within courses.",
+    "column_descriptions": {
+      "topic_id": "Unique topic identifier",
+      "course_id": "Identifier for the associated course",
+      "batch_id": "Identifier for the associated batch",
+      "parent_topic_id": "Identifier for the parent topic, if any",
+      "topic_name": "Name of the topic",
+      "topic_description": "Description of the topic",
+      "transcript": "Transcript related to the topic",
+      "topic_order": "Order of the topic in the course",
+      "notes": "Additional notes about the topic",
+      "is_private": "Indicates if the topic is private",
+      "has_quiz": "Indicates if the topic includes a quiz",
+      "is_active": "Indicates if the topic is active",
+      "date_created": "Timestamp when the topic was created",
+      "last_modified": "Timestamp when the topic was last modified"
+    },
+    "semantic_tags": [
+      "topic",
+      "course",
+      "education"
+    ]
+  },
+  "batch": {
+    "description": "Stores information about batches of courses.",
+    "column_descriptions": {
+      "batch_id": "Unique batch identifier",
+      "course_id": "Identifier for the associated course",
+      "webinar_id": "Identifier for the associated webinar",
+      "meet_binder_id": "Identifier for the meet binder",
+      "zoom_id": "Identifier for the associated Zoom meeting",
+      "previous_batch_id": "Identifier for the previous batch, if any",
+      "faculty_id": "Identifier for the faculty teaching the batch",
+      "batch_name": "Name of the batch",
+      "start_date": "Start date of the batch",
+      "class_days": "Days of the week classes are held",
+      "class_time": "Time classes are held",
+      "is_active": "Indicates if the batch is active",
+      "fees": "Fees for the batch",
+      "fees_dollar": "Fees in dollar currency",
+      "fees_project": "Fees for project-based learning",
+      "fees_project_dollar": "Project-based fees in dollar currency",
+      "duration": "Duration of the batch",
+      "is_private": "Indicates if the batch is private",
+      "date_created": "Timestamp when the batch was created",
+      "last_modified": "Timestamp when the batch was last modified"
+    },
+    "semantic_tags": [
+      "batch",
+      "course",
+      "schedule"
+    ]
+  },
+  "webinar": {
+    "description": "Stores information about webinars conducted.",
+    "column_descriptions": {
+      "webinar_id": "Unique webinar identifier",
+      "gotowebinar_id": "Identifier for the GoToWebinar platform",
+      "subject": "Subject of the webinar",
+      "total_registrants": "Total number of registrants for the webinar",
+      "times": "Scheduled times for the webinar",
+      "date_created": "Timestamp when the webinar was created",
+      "last_modified": "Timestamp when the webinar was last modified"
+    },
+    "semantic_tags": [
+      "webinar",
+      "event",
+      "online"
+    ]
+  },
+  "faculty": {
+    "description": "Stores information about faculty members teaching courses.",
+    "column_descriptions": {
+      "faculty_id": "Unique faculty identifier",
+      "user_id": "Identifier for the associated user",
+      "hourly_price": "Hourly rate for the faculty member",
+      "faculty_30_min": "Rate for a 30-minute session",
+      "is_live_session": "Indicates if the faculty conducts live sessions",
+      "pedigree": "Educational background of the faculty",
+      "summary": "Brief summary of the faculty's expertise",
+      "highlights": "Highlights of the faculty's achievements",
+      "bio": "Biography of the faculty member",
+      "type": "Type of faculty (e.g., guest, permanent)",
+      "is_active": "Indicates if the faculty member is active",
+      "date_created": "Timestamp when the faculty record was created",
+      "last_modified": "Timestamp when the faculty record was last modified"
+    },
+    "semantic_tags": [
+      "faculty",
+      "instructor",
+      "education"
+    ]
+  },
+  "address": {
+    "description": "Stores detailed information about addresses.",
+    "column_descriptions": {
+      "address_id": "Unique address identifier",
+      "city_id": "Identifier for the city",
+      "name": "Name of the address holder",
+      "address_line_1": "Primary address line",
+      "address_line_2": "Secondary address line",
+      "zip": "Postal code",
+      "zip_code": "Alternative postal code",
+      "date_created": "Record creation date",
+      "last_modified": "Last modification date",
+      "phone": "Contact phone number",
+      "email": "Contact email address"
+    },
+    "semantic_tags": [
+      "address",
+      "location",
+      "contact"
+    ]
+  },
+  "city": {
+    "description": "Contains information about cities within states.",
+    "column_descriptions": {
+      "city_id": "Unique city identifier",
+      "state_id": "Identifier for the state",
+      "name": "Name of the city",
+      "date_created": "Record creation date",
+      "last_modified": "Last modification date"
+    },
+    "semantic_tags": [
+      "city",
+      "geography",
+      "location"
+    ]
+  },
+  "state": {
+    "description": "Holds data about states within countries.",
+    "column_descriptions": {
+      "state_id": "Unique state identifier",
+      "country_id": "Identifier for the country",
+      "name": "Name of the state",
+      "date_created": "Record creation date",
+      "last_modified": "Last modification date"
+    },
+    "semantic_tags": [
+      "state",
+      "geography",
+      "location"
+    ]
+  },
+  "country": {
+    "description": "Stores information about countries.",
+    "column_descriptions": {
+      "country_id": "Unique country identifier",
+      "name": "Name of the country",
+      "date_created": "Record creation date",
+      "last_modified": "Last modification date"
+    },
+    "semantic_tags": [
+      "country",
+      "geography",
+      "location"
+    ]
+  },
+  "adl_question": {
+    "description": "Contains questions for assessments or quizzes.",
+    "column_descriptions": {
+      "question_id": "Unique question identifier",
+      "question": "The text of the question",
+      "question_type": "Type of the question (e.g., multiple choice)",
+      "date_created": "Record creation date",
+      "last_modified": "Last modification date"
+    },
+    "semantic_tags": [
+      "question",
+      "assessment",
+      "quiz"
+    ]
+  },
+  "adl_question_answer": {
+    "description": "Stores possible answers for questions in assessments.",
+    "column_descriptions": {
+      "answer_id": "Unique answer identifier",
+      "question_id": "Identifier for the related question",
+      "answer": "Text of the answer",
+      "is_correct": "Indicates if the answer is correct",
+      "answer_explain": "Explanation for the answer",
+      "date_created": "Record creation date",
+      "last_modified": "Last modification date"
+    },
+    "semantic_tags": [
+      "answer",
+      "assessment",
+      "quiz"
+    ]
+  },
+  "adl_question_image": {
+    "description": "Stores images related to questions in assessments.",
+    "column_descriptions": {
+      "question_image_id": "Unique image identifier",
+      "question_id": "Identifier for the related question",
+      "image_url": "URL of the image",
+      "date_created": "Record creation date",
+      "last_modified": "Last modification date"
+    },
+    "semantic_tags": [
+      "image",
+      "question",
+      "assessment"
+    ]
+  },
+  "adl_quiz": {
+    "description": "Tracks quizzes and their active status.",
+    "column_descriptions": {
+      "quiz_id": "Unique quiz identifier",
+      "quiz_name": "Name of the quiz",
+      "is_active": "Indicates if the quiz is currently active",
+      "date_created": "Record creation date",
+      "last_modified": "Last modification date"
+    },
+    "semantic_tags": [
+      "quiz",
+      "assessment",
+      "education"
+    ]
+  },
+  "adl_quiz_course": {
+    "description": "Links quizzes to specific courses.",
+    "column_descriptions": {
+      "quiz_course_id": "Unique identifier for the quiz-course relationship",
+      "quiz_id": "Identifier for the related quiz",
+      "course_id": "Identifier for the related course",
+      "date_created": "Record creation date",
+      "last_modified": "Last modification date"
+    },
+    "semantic_tags": [
+      "quiz",
+      "course",
+      "education"
+    ]
+  },
+  "course": {
+    "description": "Stores comprehensive information about courses offered.",
+    "column_descriptions": {
+      "course_id": "Unique course identifier",
+      "mailchimp_id": "Mailchimp identifier for marketing",
+      "feedback_mailchimp_id": "Mailchimp ID for feedback collection",
+      "enrolled_user_mailchimp_id": "Mailchimp ID for enrolled users",
+      "linkedin_id": "LinkedIn identifier for the course",
+      "is_ibm": "Indicates if the course is IBM-related",
+      "is_demo": "Indicates if the course is a demo",
+      "has_batch": "Indicates if the course has batches",
+      "course_code": "Code for the course",
+      "course_type": "Type of the course (e.g., online, offline)",
+      "title": "Full title of the course",
+      "short_title": "Shortened title of the course",
+      "meta_title": "SEO title for the course",
+      "meta_description": "SEO description for the course",
+      "meta_keywords": "SEO keywords for the course",
+      "teach": "Teaching methodology used",
+      "jobs": "Job opportunities related to the course",
+      "is_hd": "Indicates if the course is high-definition",
+      "og_description": "Open Graph description for social media",
+      "seo_keyword1": "Primary SEO keyword",
+      "seo_keyword2": "Secondary SEO keyword",
+      "seo_keyword3": "Tertiary SEO keyword",
+      "benefits": "Benefits of taking the course",
+      "job_types": "Types of jobs related to the course",
+      "learning_mode": "Mode of learning (e.g., self-paced)",
+      "placement_assistance": "Indicates if placement assistance is provided",
+      "course_materials": "Materials provided for the course",
+      "description": "Detailed description of the course",
+      "duration": "Total duration of the course",
+      "duration_hours": "Duration in hours",
+      "person_hours": "Total person hours required",
+      "person_desc": "Description of person hours",
+      "online_class_hours": "Hours of online classes",
+      "online_class_desc": "Description of online class hours",
+      "recorded_class_hours": "Hours of recorded classes",
+      "lab_hours": "Hours of lab work",
+      "lab_desc": "Description of lab hours",
+      "project_hours": "Hours dedicated to projects",
+      "project_desc": "Description of project hours",
+      "lifetime_access": "Indicates if lifetime access is provided",
+      "money_back": "Indicates if a money-back guarantee is offered",
+      "faq": "Frequently asked questions about the course",
+      "sample_video": "Link to a sample video of the course",
+      "testimonials": "Testimonials from past students",
+      "fees": "Total fees for the course",
+      "fees_dollar": "Fees in dollar amount",
+      "is_exam": "Indicates if an exam is part of the course",
+      "is_active": "Indicates if the course is currently active",
+      "date_created": "Record creation date",
+      "last_modified": "Last modification date",
+      "is_new": "Indicates if the course is newly added"
+    },
+    "semantic_tags": [
+      "course",
+      "education",
+      "learning"
+    ]
+  },
+  "course_news": {
+    "description": "Stores news and updates related to courses.",
+    "column_descriptions": {
+      "course_news_id": "Unique identifier for the news item",
+      "course_id": "Identifier for the related course",
+      "headline": "Title of the news item",
+      "news_item": "Content of the news item",
+      "date_created": "Timestamp when the news item was created",
+      "last_modified": "Timestamp when the news item was last updated"
+    },
+    "semantic_tags": [
+      "course",
+      "news",
+      "updates"
+    ]
+  },
+  "course_offer": {
+    "description": "Contains promotional offers for courses.",
+    "column_descriptions": {
+      "course_offer_id": "Unique identifier for the course offer",
+      "course_id": "Identifier for the related course",
+      "offer_course_id": "Identifier for the offered course",
+      "details": "Description of the offer",
+      "discount_price_usd": "Discounted price in USD",
+      "discount_price_inr": "Discounted price in INR",
+      "is_active": "Indicates if the offer is currently active",
+      "order": "Order of the offer in listings",
+      "date_created": "Timestamp when the offer was created",
+      "last_modified": "Timestamp when the offer was last updated"
+    },
+    "semantic_tags": [
+      "course",
+      "offer",
+      "promotion"
+    ]
+  },
+  "course_projects": {
+    "description": "Tracks projects associated with courses.",
+    "column_descriptions": {
+      "course_projects_id": "Unique identifier for the course project",
+      "course_id": "Identifier for the related course",
+      "project_id": "Identifier for the project",
+      "topic_id": "Identifier for the topic of the project",
+      "order": "Order of the project in listings",
+      "is_active": "Indicates if the project is currently active",
+      "date_created": "Timestamp when the project was created",
+      "last_modified": "Timestamp when the project was last updated"
+    },
+    "semantic_tags": [
+      "course",
+      "projects",
+      "assignments"
+    ]
+  },
+  "course_question_temp": {
+    "description": "Stores temporary questions related to courses.",
+    "column_descriptions": {
+      "course_question_id": "Unique identifier for the course question",
+      "question_title": "Title of the question"
+    },
+    "semantic_tags": [
+      "course",
+      "questions",
+      "temporary"
+    ]
+  },
+  "course_video": {
+    "description": "Stores information about videos associated with courses.",
+    "column_descriptions": {
+      "course_video_id": "Unique identifier for the course video",
+      "course_id": "Identifier for the related course",
+      "batch_id": "Identifier for the batch of the course",
+      "video_id": "Identifier for the video",
+      "webinar_date": "Date of the webinar associated with the video",
+      "date_created": "Timestamp when the video entry was created",
+      "last_modified": "Timestamp when the video entry was last updated"
+    },
+    "semantic_tags": [
+      "course",
+      "video",
+      "media"
+    ]
+  },
+  "video": {
+    "description": "Stores details about various videos.",
+    "column_descriptions": {
+      "video_id": "Unique identifier for the video",
+      "video_description": "Description of the video content",
+      "video_url": "URL of the video",
+      "video_url_hd": "URL of the high-definition version of the video",
+      "date_created": "Timestamp when the video entry was created",
+      "last_modified": "Timestamp when the video entry was last updated"
+    },
+    "semantic_tags": [
+      "video",
+      "media",
+      "content"
+    ]
+  },
+  "customer_request": {
+    "description": "Tracks requests made by customers.",
+    "column_descriptions": {
+      "customer_request_id": "Unique identifier for the customer request",
+      "user_id": "Identifier for the user making the request",
+      "request_text": "Content of the customer request",
+      "date_created": "Timestamp when the request was created",
+      "last_modified": "Timestamp when the request was last updated"
+    },
+    "semantic_tags": [
+      "customer",
+      "request",
+      "support"
+    ]
+  },
+  "discount": {
+    "description": "Stores discount information for courses.",
+    "column_descriptions": {
+      "discount_id": "Unique identifier for the discount",
+      "user_id": "Identifier for the user eligible for the discount",
+      "course_id": "Identifier for the related course",
+      "discount_code": "Code used to apply the discount",
+      "discount_percentage": "Percentage of the discount",
+      "is_active": "Indicates if the discount is currently active",
+      "one_time": "Indicates if the discount can be used only once",
+      "valid_until": "Expiration date of the discount",
+      "date_created": "Timestamp when the discount was created",
+      "last_modified": "Timestamp when the discount was last updated"
+    },
+    "semantic_tags": [
+      "discount",
+      "promotion",
+      "course"
+    ]
+  },
+  "enroll_affirm": {
+    "description": "Tracks enrollment affirmations and payment details.",
+    "column_descriptions": {
+      "enroll_affirm_id": "Unique identifier for the enrollment affirmation",
+      "affirm_charge_id": "Identifier for the charge in the payment system",
+      "affirm_user_id": "Identifier for the user in the payment system",
+      "affirm_user_timezone": "Timezone of the user",
+      "affirm_amount": "Amount charged",
+      "affirm_is_captured": "Indicates if the payment has been captured",
+      "email": "User's email address",
+      "first_name": "User's first name",
+      "last_name": "User's last name",
+      "phone": "User's phone number",
+      "payment_amount": "Amount paid for the enrollment",
+      "order_id": "Identifier for the related order",
+      "enrollment_id": "Identifier for the enrollment",
+      "product_name": "Name of the product related to the enrollment",
+      "date_created": "Timestamp when the affirmation was created",
+      "last_modified": "Timestamp when the affirmation was last updated"
+    },
+    "semantic_tags": [
+      "enrollment",
+      "payment",
+      "affirm"
+    ]
+  },
+  "enrollment": {
+    "description": "Tracks user enrollments in courses.",
+    "column_descriptions": {
+      "enrollment_id": "Unique identifier for the enrollment",
+      "course_id": "Identifier for the related course",
+      "batch_id": "Identifier for the batch of the course",
+      "user_id": "Identifier for the user enrolled",
+      "discount_id": "Identifier for any applicable discount",
+      "order_id": "Identifier for the related order",
+      "payment_received": "Indicates if payment has been received",
+      "payment_form": "Method of payment used",
+      "authdesc": "Description of the authorization",
+      "payment_amount": "Amount paid for the enrollment",
+      "is_complete": "Indicates if the enrollment process is complete",
+      "valid_until": "Expiration date for the enrollment",
+      "date_created": "Timestamp when the enrollment was created",
+      "last_modified": "Timestamp when the enrollment was last updated"
+    },
+    "semantic_tags": [
+      "enrollment",
+      "course",
+      "user"
+    ]
+  },
+  "enterprise_leads": {
+    "description": "Stores information about potential business leads for the enterprise.",
+    "column_descriptions": {
+      "enterprise_leads_id": "Unique identifier for the lead",
+      "user_id": "Identifier for the user associated with the lead",
+      "date_created": "Timestamp when the lead was created",
+      "last_modified": "Timestamp of the last modification to the lead"
+    },
+    "semantic_tags": [
+      "lead",
+      "business",
+      "enterprise"
+    ]
+  },
+  "exam": {
+    "description": "Contains details about various exams available for users.",
+    "column_descriptions": {
+      "exam_id": "Unique identifier for the exam",
+      "exam_name": "Name of the exam",
+      "exam_time": "Duration allocated for the exam",
+      "questions": "Total number of questions in the exam",
+      "template": "Template used for the exam format",
+      "is_active": "Indicates if the exam is currently active",
+      "date_created": "Timestamp when the exam was created",
+      "last_modified": "Timestamp of the last modification to the exam"
+    },
+    "semantic_tags": [
+      "exam",
+      "assessment",
+      "education"
+    ]
+  },
+  "exam_course": {
+    "description": "Links exams to specific courses offered.",
+    "column_descriptions": {
+      "exam_course_id": "Unique identifier for the exam-course relationship",
+      "course_id": "Identifier for the associated course",
+      "exam_id": "Identifier for the associated exam",
+      "date_created": "Timestamp when the relationship was created",
+      "last_modified": "Timestamp of the last modification to the relationship"
+    },
+    "semantic_tags": [
+      "course",
+      "exam",
+      "link"
+    ]
+  },
+  "exam_question": {
+    "description": "Stores questions associated with specific exams.",
+    "column_descriptions": {
+      "exam_question_id": "Unique identifier for the exam question",
+      "exam_id": "Identifier for the exam the question belongs to",
+      "question_id": "Identifier for the specific question",
+      "is_active": "Indicates if the question is currently active",
+      "date_created": "Timestamp when the question was created",
+      "last_modified": "Timestamp of the last modification to the question"
+    },
+    "semantic_tags": [
+      "question",
+      "exam",
+      "assessment"
+    ]
+  },
+  "exam_response": {
+    "description": "Records responses given by users for exam questions.",
+    "column_descriptions": {
+      "exam_response_id": "Unique identifier for the exam response",
+      "exam_user_id": "Identifier for the user taking the exam",
+      "question_id": "Identifier for the question being answered",
+      "answer_id": "Identifier for the selected answer",
+      "date_created": "Timestamp when the response was created",
+      "last_modified": "Timestamp of the last modification to the response"
+    },
+    "semantic_tags": [
+      "response",
+      "exam",
+      "user"
+    ]
+  },
+  "exam_user": {
+    "description": "Tracks user participation and performance in exams.",
+    "column_descriptions": {
+      "exam_user_id": "Unique identifier for the exam user record",
+      "exam_id": "Identifier for the exam taken by the user",
+      "user_id": "Identifier for the user taking the exam",
+      "is_complete": "Indicates if the exam has been completed",
+      "score": "Score achieved by the user in the exam",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp of the last modification to the record"
+    },
+    "semantic_tags": [
+      "user",
+      "exam",
+      "performance"
+    ]
+  },
+  "expert_session_batch": {
+    "description": "Manages details of expert sessions conducted in batches.",
+    "column_descriptions": {
+      "expert_session_batch_id": "Unique identifier for the expert session batch",
+      "user_id": "Identifier for the user participating in the session",
+      "faculty_id": "Identifier for the faculty conducting the session",
+      "batch_id": "Identifier for the specific batch of sessions",
+      "session_duration": "Duration of the expert session",
+      "amount": "Amount charged for the session",
+      "stripe_token_id": "Token for processing payments via Stripe",
+      "stripe_customer_id": "Identifier for the customer in Stripe",
+      "date_created": "Timestamp when the batch was created",
+      "last_modified": "Timestamp of the last modification to the batch"
+    },
+    "semantic_tags": [
+      "session",
+      "expert",
+      "batch"
+    ]
+  },
+  "expert_session_project": {
+    "description": "Tracks expert sessions related to specific projects.",
+    "column_descriptions": {
+      "expert_session_project_id": "Unique identifier for the expert session project",
+      "user_id": "Identifier for the user participating in the session",
+      "faculty_id": "Identifier for the faculty conducting the session",
+      "project_id": "Identifier for the specific project associated with the session",
+      "session_duration": "Duration of the expert session",
+      "amount": "Amount charged for the session",
+      "stripe_token_id": "Token for processing payments via Stripe",
+      "stripe_customer_id": "Identifier for the customer in Stripe",
+      "date_created": "Timestamp when the project session was created",
+      "last_modified": "Timestamp of the last modification to the project session"
+    },
+    "semantic_tags": [
+      "session",
+      "expert",
+      "project"
+    ]
+  },
+  "feedback": {
+    "description": "Collects feedback from users regarding their experience.",
+    "column_descriptions": {
+      "feedback_id": "Unique identifier for the feedback entry",
+      "name": "Name of the person providing feedback",
+      "date_created": "Timestamp when the feedback was created",
+      "last_modified": "Timestamp of the last modification to the feedback"
+    },
+    "semantic_tags": [
+      "feedback",
+      "user",
+      "experience"
+    ]
+  },
+  "feedback_answers": {
+    "description": "Stores answers provided by users to feedback questions.",
+    "column_descriptions": {
+      "feedback_answers_id": "Unique identifier for the feedback answer",
+      "feedback_questions_id": "Identifier for the feedback question",
+      "option": "Selected option or answer to the question",
+      "date_created": "Timestamp when the answer was created",
+      "last_modified": "Timestamp of the last modification to the answer"
+    },
+    "semantic_tags": [
+      "answers",
+      "feedback",
+      "survey"
+    ]
+  },
+  "feedback_questions": {
+    "description": "Stores questions related to user feedback.",
+    "column_descriptions": {
+      "feedback_questions_id": "Unique identifier for the feedback question",
+      "feedback_id": "Identifier linking to the associated feedback",
+      "feedback_category_id": "Identifier for the category of the feedback",
+      "question": "The text of the feedback question",
+      "is_active": "Indicates if the question is currently active",
+      "date_created": "Timestamp when the question was created",
+      "last_modified": "Timestamp when the question was last modified"
+    },
+    "semantic_tags": [
+      "feedback",
+      "questions",
+      "survey"
+    ]
+  },
+  "feedback_category": {
+    "description": "Categorizes different types of feedback.",
+    "column_descriptions": {
+      "feedback_category_id": "Unique identifier for the feedback category",
+      "type": "Type or name of the feedback category",
+      "date_created": "Timestamp when the category was created",
+      "last_modified": "Timestamp when the category was last modified"
+    },
+    "semantic_tags": [
+      "feedback",
+      "category",
+      "classification"
+    ]
+  },
+  "feedback_meet": {
+    "description": "Links feedback to specific meetings.",
+    "column_descriptions": {
+      "feedback_meet_id": "Unique identifier for the feedback meeting link",
+      "meet_id": "Identifier for the associated meeting",
+      "zoom_times_id": "Identifier for the associated Zoom session",
+      "feedback_id": "Identifier linking to the associated feedback",
+      "project_id": "Identifier for the related project",
+      "date_created": "Timestamp when the link was created",
+      "last_modified": "Timestamp when the link was last modified"
+    },
+    "semantic_tags": [
+      "feedback",
+      "meetings",
+      "link"
+    ]
+  },
+  "zoom_times": {
+    "description": "Stores scheduling information for Zoom sessions.",
+    "column_descriptions": {
+      "zoom_times_id": "Unique identifier for the Zoom time entry",
+      "zoom_id": "Identifier for the associated Zoom meeting",
+      "start_time": "Start time of the Zoom session",
+      "end_time": "End time of the Zoom session",
+      "download_url": "URL for downloading the session recording",
+      "date_created": "Timestamp when the time entry was created",
+      "last_modified": "Timestamp when the time entry was last modified"
+    },
+    "semantic_tags": [
+      "zoom",
+      "scheduling",
+      "sessions"
+    ]
+  },
+  "zoom": {
+    "description": "Stores information about Zoom meetings.",
+    "column_descriptions": {
+      "zoom_id": "Unique identifier for the Zoom meeting",
+      "id": "Meeting ID for the Zoom session",
+      "host_id": "Identifier for the host of the meeting",
+      "uuid": "Unique identifier for the meeting instance",
+      "topic": "Topic or title of the Zoom meeting",
+      "times": "Timing details for the meeting",
+      "timezone": "Timezone of the meeting",
+      "type": "Type of Zoom meeting (e.g., scheduled, instant)",
+      "date_created": "Timestamp when the meeting was created",
+      "last_modified": "Timestamp when the meeting was last modified"
+    },
+    "semantic_tags": [
+      "zoom",
+      "meetings",
+      "video"
+    ]
+  },
+  "zoom_host": {
+    "description": "Stores information about Zoom meeting hosts.",
+    "column_descriptions": {
+      "zoom_host_id": "Unique identifier for the Zoom host",
+      "email": "Email address of the Zoom host",
+      "host_id": "Identifier for the host in the system",
+      "date_created": "Timestamp when the host record was created",
+      "last_modified": "Timestamp when the host record was last modified"
+    },
+    "semantic_tags": [
+      "zoom",
+      "host",
+      "users"
+    ]
+  },
+  "meet": {
+    "description": "Stores details about meetings.",
+    "column_descriptions": {
+      "meet_id": "Unique identifier for the meeting",
+      "session_key": "Key for the meeting session",
+      "binder_id": "Identifier for the binder associated with the meeting",
+      "start_date": "Start date and time of the meeting",
+      "end_date": "End date and time of the meeting",
+      "timezone": "Timezone of the meeting",
+      "hd": "Indicates if the meeting is in HD",
+      "date_created": "Timestamp when the meeting was created",
+      "last_modified": "Timestamp when the meeting was last modified"
+    },
+    "semantic_tags": [
+      "meetings",
+      "scheduling",
+      "details"
+    ]
+  },
+  "feedback_response": {
+    "description": "Stores user responses to feedback questions.",
+    "column_descriptions": {
+      "feedback_response_id": "Unique identifier for the feedback response",
+      "feedback_id": "Identifier linking to the associated feedback",
+      "feedback_questions_id": "Identifier for the question being answered",
+      "feedback_answers_id": "Identifier for the answer provided",
+      "answer": "The user's answer to the feedback question",
+      "user_id": "Identifier for the user providing the response",
+      "feedback_meet_id": "Identifier linking to the associated feedback meeting",
+      "meet_id": "Identifier for the associated meeting",
+      "zoom_times_id": "Identifier for the associated Zoom session",
+      "date_created": "Timestamp when the response was created",
+      "last_modified": "Timestamp when the response was last modified"
+    },
+    "semantic_tags": [
+      "feedback",
+      "responses",
+      "user"
+    ]
+  },
+  "filter": {
+    "description": "Stores filters for categorizing feedback or data.",
+    "column_descriptions": {
+      "filter_id": "Unique identifier for the filter",
+      "filter_name": "Name of the filter",
+      "parent_category_id": "Identifier for the parent category of the filter",
+      "category_filter_type_id": "Identifier for the type of filter category",
+      "is_active": "Indicates if the filter is currently active",
+      "order_number": "Order number for sorting filters",
+      "date_created": "Timestamp when the filter was created",
+      "last_modified": "Timestamp when the filter was last modified"
+    },
+    "semantic_tags": [
+      "filter",
+      "categorization",
+      "data"
+    ]
+  },
+  "hackathon": {
+    "description": "Stores information about hackathon events.",
+    "column_descriptions": {
+      "hackathon_id": "Unique identifier for the hackathon",
+      "title": "Title of the hackathon",
+      "keyword": "Keyword associated with the hackathon",
+      "meta_title": "Meta title for SEO purposes",
+      "meta_keywords": "Meta keywords for SEO purposes",
+      "meta_description": "Meta description for SEO purposes",
+      "short_desc": "Short description of the hackathon",
+      "detailed_desc": "Detailed description of the hackathon",
+      "rules": "Rules governing the hackathon",
+      "data": "Data or resources provided for the hackathon",
+      "prize": "Prize information for the hackathon",
+      "start_date": "Start date of the hackathon",
+      "end_date": "End date of the hackathon",
+      "answer_csv": "CSV file with answers or submissions",
+      "is_active": "Indicates if the hackathon is currently active",
+      "date_created": "Timestamp when the hackathon was created",
+      "last_modified": "Timestamp when the hackathon was last modified"
+    },
+    "semantic_tags": [
+      "hackathon",
+      "events",
+      "competition"
+    ]
+  },
+  "linkedin": {
+    "description": "Stores professional profiles of individuals on LinkedIn.",
+    "column_descriptions": {
+      "linkedin_id": "Unique identifier for the LinkedIn profile",
+      "first_name": "User's first name",
+      "last_name": "User's last name",
+      "company": "Company where the user is employed",
+      "designation": "User's job title",
+      "profile_url": "URL to the user's LinkedIn profile",
+      "picture_url": "URL to the user's profile picture",
+      "start_date": "Start date of the user's current position",
+      "end_date": "End date of the user's current position",
+      "city_id": "Identifier for the user's city",
+      "date_created": "Timestamp when the profile was created",
+      "last_modified": "Timestamp when the profile was last updated"
+    },
+    "semantic_tags": [
+      "linkedin",
+      "profile",
+      "professional"
+    ]
+  },
+  "linkedin_params": {
+    "description": "Stores parameters for LinkedIn searches and filters.",
+    "column_descriptions": {
+      "linkedin_params_id": "Unique identifier for the parameters",
+      "city_id": "Identifier for the city related to the search",
+      "keywords": "Keywords for the search query",
+      "openAdvancedForm": "Indicates if the advanced search form is open",
+      "locationType": "Type of location for the search",
+      "orig": "Original source of the search",
+      "postalCode": "Postal code for the search location",
+      "countryCode": "Country code for the search location",
+      "distance": "Distance parameter for the search",
+      "date_created": "Timestamp when the parameters were created",
+      "last_modified": "Timestamp when the parameters were last updated"
+    },
+    "semantic_tags": [
+      "linkedin",
+      "search",
+      "parameters"
+    ]
+  },
+  "lp_filter_value": {
+    "description": "Stores possible values for filters used in projects.",
+    "column_descriptions": {
+      "lp_filter_value_id": "Unique identifier for the filter value",
+      "lp_filter_id": "Identifier for the associated filter",
+      "lp_filter_value": "The actual value of the filter",
+      "is_active": "Indicates if the filter value is active",
+      "date_created": "Timestamp when the filter value was created",
+      "last_modified": "Timestamp when the filter value was last updated"
+    },
+    "semantic_tags": [
+      "filter",
+      "value",
+      "projects"
+    ]
+  },
+  "lp_filters": {
+    "description": "Stores various filters that can be applied to projects.",
+    "column_descriptions": {
+      "lp_filter_id": "Unique identifier for the filter",
+      "lp_filter_name": "Name of the filter",
+      "is_active": "Indicates if the filter is active",
+      "date_created": "Timestamp when the filter was created",
+      "last_modified": "Timestamp when the filter was last updated"
+    },
+    "semantic_tags": [
+      "filter",
+      "projects",
+      "criteria"
+    ]
+  },
+  "lp_popular": {
+    "description": "Stores popular paths and their associated metadata.",
+    "column_descriptions": {
+      "popular_path_id": "Unique identifier for the popular path",
+      "category_id": "Identifier for the category of the path",
+      "title": "Title of the popular path",
+      "meta_title": "Meta title for SEO purposes",
+      "keyword": "Primary keyword associated with the path",
+      "meta_keywords": "Keywords for SEO purposes",
+      "meta_description": "Meta description for SEO purposes",
+      "seo_keyword_1": "Additional SEO keyword",
+      "short_desc": "Short description of the popular path",
+      "detailed_desc": "Detailed description of the popular path",
+      "is_active": "Indicates if the popular path is active",
+      "type": "Type of the popular path",
+      "date_created": "Timestamp when the popular path was created",
+      "last_modified": "Timestamp when the popular path was last updated"
+    },
+    "semantic_tags": [
+      "popular",
+      "path",
+      "SEO"
+    ]
+  },
+  "lp_popular_projects": {
+    "description": "Links popular paths to specific projects.",
+    "column_descriptions": {
+      "popular_path_project_id": "Unique identifier for the popular path project link",
+      "popular_path_id": "Identifier for the associated popular path",
+      "project_id": "Identifier for the linked project",
+      "difficulty": "Difficulty level of the project",
+      "order": "Order of the project in the popular path",
+      "is_active": "Indicates if the link is active",
+      "date_created": "Timestamp when the link was created",
+      "last_modified": "Timestamp when the link was last updated"
+    },
+    "semantic_tags": [
+      "popular",
+      "projects",
+      "link"
+    ]
+  },
+  "lp_project_filter": {
+    "description": "Associates projects with specific filters and their values.",
+    "column_descriptions": {
+      "lp_project_filter_id": "Unique identifier for the project filter association",
+      "lp_project_id": "Identifier for the associated project",
+      "lp_filter_id": "Identifier for the associated filter",
+      "lp_filter_value_id": "Identifier for the associated filter value",
+      "date_created": "Timestamp when the association was created",
+      "last_modified": "Timestamp when the association was last updated"
+    },
+    "semantic_tags": [
+      "project",
+      "filter",
+      "association"
+    ]
+  },
+  "lp_projects": {
+    "description": "Stores information about various projects.",
+    "column_descriptions": {
+      "lp_project_id": "Unique identifier for the project",
+      "lp_user_id": "Identifier for the user who created the project",
+      "project_id": "Identifier for the external project",
+      "type": "Type of the project",
+      "industry": "Industry related to the project",
+      "language": "Programming language used in the project",
+      "date_created": "Timestamp when the project was created",
+      "last_modified": "Timestamp when the project was last updated"
+    },
+    "semantic_tags": [
+      "project",
+      "information",
+      "user"
+    ]
+  },
+  "lp_user": {
+    "description": "Stores information about users of the platform.",
+    "column_descriptions": {
+      "lp_user_id": "Unique identifier for the user",
+      "user_id": "Identifier for the external user",
+      "is_active": "Indicates if the user account is active",
+      "is_ds": "Indicates if the user is a data scientist",
+      "date_created": "Timestamp when the user was created",
+      "last_modified": "Timestamp when the user was last updated",
+      "is_updated": "Indicates if the user information has been updated"
+    },
+    "semantic_tags": [
+      "user",
+      "account",
+      "platform"
+    ]
+  },
+  "lp_user_filters": {
+    "description": "Associates users with specific filters and their values.",
+    "column_descriptions": {
+      "lp_user_filter_id": "Unique identifier for the user filter association",
+      "lp_user_id": "Identifier for the associated user",
+      "lp_filter_id": "Identifier for the associated filter",
+      "lp_filter_value_id": "Identifier for the associated filter value",
+      "date_created": "Timestamp when the association was created",
+      "last_modified": "Timestamp when the association was last updated"
+    },
+    "semantic_tags": [
+      "user",
+      "filter",
+      "association"
+    ]
+  },
+  "hellobar_campaign_views": {
+    "description": "Records views of HelloBar campaigns for analytics.",
+    "column_descriptions": {
+      "hellobar_campaign_views_id": "Unique identifier for campaign view record",
+      "hellobar_campaign_id": "Identifier for the associated HelloBar campaign",
+      "view_date": "Date when the campaign was viewed",
+      "views": "Number of views recorded",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "campaign",
+      "analytics",
+      "views"
+    ]
+  },
+  "interview": {
+    "description": "Stores details about interviews including metadata and scheduling.",
+    "column_descriptions": {
+      "interview_id": "Unique identifier for the interview",
+      "title": "Title of the interview",
+      "meta_title": "SEO title for the interview",
+      "meta_description": "SEO description for the interview",
+      "webinar_id": "Identifier for the associated webinar",
+      "zoom_id": "Identifier for the Zoom meeting",
+      "course_id": "Identifier for the related course",
+      "mailchimp_list_id": "Identifier for the Mailchimp list",
+      "description": "Detailed description of the interview",
+      "interview_time": "Scheduled time for the interview",
+      "image_url": "URL of the main image for the interview",
+      "thumbnail_image_url": "URL of the thumbnail image for the interview",
+      "banner": "Banner image for the interview",
+      "is_demo_class": "Indicates if this is a demo class",
+      "is_moxtra_session": "Indicates if this is a Moxtra session",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified",
+      "youtube_video_id": "Identifier for the associated YouTube video",
+      "youtube_embed_url": "Embed URL for the YouTube video"
+    },
+    "semantic_tags": [
+      "interview",
+      "webinar",
+      "scheduling"
+    ]
+  },
+  "interview_registration": {
+    "description": "Tracks registrations for interviews including participant details.",
+    "column_descriptions": {
+      "interview_reg_id": "Unique identifier for the registration record",
+      "interview_id": "Identifier for the associated interview",
+      "first_name": "Participant's first name",
+      "last_name": "Participant's last name",
+      "email": "Participant's email address",
+      "phone": "Participant's phone number",
+      "join_url": "URL for joining the interview",
+      "referer": "Source from which the participant registered",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "registration",
+      "interview",
+      "participant"
+    ]
+  },
+  "interview_speaker": {
+    "description": "Links speakers to interviews they are associated with.",
+    "column_descriptions": {
+      "interview_speaker_id": "Unique identifier for the speaker record",
+      "speaker_id": "Identifier for the speaker",
+      "interview_id": "Identifier for the associated interview",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "speaker",
+      "interview",
+      "association"
+    ]
+  },
+  "kyc_answer": {
+    "description": "Stores answers provided for KYC (Know Your Customer) questions.",
+    "column_descriptions": {
+      "kyc_answer_id": "Unique identifier for the KYC answer",
+      "kyc_question_id": "Identifier for the associated KYC question",
+      "kyc_answer": "The answer given to the KYC question",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "KYC",
+      "answers",
+      "customer"
+    ]
+  },
+  "kyc_question": {
+    "description": "Defines questions used in the KYC (Know Your Customer) process.",
+    "column_descriptions": {
+      "kyc_question_id": "Unique identifier for the KYC question",
+      "kyc_question": "The text of the KYC question",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "KYC",
+      "questions",
+      "customer"
+    ]
+  },
+  "kyc_response": {
+    "description": "Links KYC answers to questions and users for compliance.",
+    "column_descriptions": {
+      "kyc_response_id": "Unique identifier for the KYC response",
+      "kyc_question_id": "Identifier for the associated KYC question",
+      "kyc_answer_id": "Identifier for the associated KYC answer",
+      "user_id": "Identifier for the user providing the response",
+      "other_response": "Any additional response provided by the user",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "KYC",
+      "responses",
+      "compliance"
+    ]
+  },
+  "lab": {
+    "description": "Stores information about labs including their tasks and outcomes.",
+    "column_descriptions": {
+      "lab_id": "Unique identifier for the lab",
+      "title": "Title of the lab",
+      "keyword": "Keyword associated with the lab",
+      "meta_title": "SEO title for the lab",
+      "meta_keywords": "SEO keywords for the lab",
+      "meta_description": "SEO description for the lab",
+      "problem": "Problem statement addressed by the lab",
+      "dataset": "Dataset used in the lab",
+      "solution_url": "URL for the lab's solution",
+      "task_to_perform": "Task that participants need to perform in the lab",
+      "learnings": "Key learnings from the lab",
+      "faqs": "Frequently asked questions related to the lab",
+      "is_active": "Indicates if the lab is currently active",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "lab",
+      "education",
+      "dataset"
+    ]
+  },
+  "license_assignment": {
+    "description": "Manages the assignment of licenses to organizations and their leaders.",
+    "column_descriptions": {
+      "license_assignment_id": "Unique identifier for the license assignment",
+      "organization_id": "Identifier for the organization receiving the license",
+      "admin_id": "Identifier for the admin managing the assignment",
+      "team_leader_id": "Identifier for the team leader associated with the license",
+      "license_count": "Number of licenses assigned",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "license",
+      "assignment",
+      "organization"
+    ]
+  },
+  "license_purchase": {
+    "description": "Records purchases of licenses by organizations and users.",
+    "column_descriptions": {
+      "license_purchase_id": "Unique identifier for the license purchase",
+      "organization_id": "Identifier for the organization making the purchase",
+      "user_id": "Identifier for the user making the purchase",
+      "license_count": "Number of licenses purchased",
+      "amount": "Total amount paid for the licenses",
+      "subscription_period": "Duration of the license subscription",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "license",
+      "purchase",
+      "transaction"
+    ]
+  },
+  "hackathon_participant": {
+    "description": "Records participants in hackathon events.",
+    "column_descriptions": {
+      "hackathon_participant_id": "Unique identifier for the hackathon participant",
+      "hackathon_id": "Identifier for the associated hackathon",
+      "user_id": "Identifier for the user participating",
+      "date_created": "Timestamp when the participant was added",
+      "last_modified": "Timestamp when the participant record was last updated"
+    },
+    "semantic_tags": [
+      "hackathon",
+      "participant",
+      "event"
+    ]
+  },
+  "hackathon_submission": {
+    "description": "Stores submissions made by participants in hackathons.",
+    "column_descriptions": {
+      "hackathon_submission_id": "Unique identifier for the submission",
+      "hackathon_id": "Identifier for the associated hackathon",
+      "user_id": "Identifier for the user who made the submission",
+      "code_files": "Files containing the submitted code",
+      "submission_file": "Main file submitted for the hackathon",
+      "additional_file": "Any additional files submitted",
+      "score": "Score awarded for the submission",
+      "date_created": "Timestamp when the submission was created",
+      "last_modified": "Timestamp when the submission record was last updated"
+    },
+    "semantic_tags": [
+      "submission",
+      "hackathon",
+      "code"
+    ]
+  },
+  "hackerday_enroll": {
+    "description": "Tracks user enrollments in HackerDay programs.",
+    "column_descriptions": {
+      "hackerday_enroll_id": "Unique identifier for the enrollment",
+      "hackerday_token_id": "Identifier for the associated HackerDay token",
+      "hackerday_plan_id": "Identifier for the plan the user enrolled in",
+      "user_id": "Identifier for the user enrolled",
+      "project_id": "Identifier for the associated project",
+      "landing_page": "URL of the landing page for the enrollment",
+      "stripe_customer_id": "Identifier for the customer in Stripe",
+      "stripe_token_id": "Token identifier for Stripe transactions",
+      "stripe_subscription_id": "Identifier for the subscription in Stripe",
+      "amount": "Amount charged for the enrollment",
+      "cashback": "Cashback amount associated with the enrollment",
+      "user_agent": "User agent string from the user's browser",
+      "is_subscribe": "Indicates if the user is subscribed",
+      "is_refund": "Indicates if the enrollment was refunded",
+      "is_failed": "Indicates if the enrollment failed",
+      "total_months": "Total months of the subscription",
+      "current_period_start": "Start date of the current billing period",
+      "current_period_end": "End date of the current billing period",
+      "date_unsubscribed": "Timestamp when the user unsubscribed",
+      "discount_expiry": "Expiry date for any discounts",
+      "failure_message": "Message detailing any failure",
+      "card_trial_id": "Identifier for the trial card used",
+      "pause_days": "Number of days the subscription is paused",
+      "expert_sessions": "Number of expert sessions included",
+      "date_created": "Timestamp when the enrollment was created",
+      "last_modified": "Timestamp when the enrollment record was last updated"
+    },
+    "semantic_tags": [
+      "enrollment",
+      "HackerDay",
+      "subscription"
+    ]
+  },
+  "hackerday_token": {
+    "description": "Manages tokens used for HackerDay services.",
+    "column_descriptions": {
+      "hackerday_token_id": "Unique identifier for the token",
+      "user_id": "Identifier for the user associated with the token",
+      "token": "The actual token string",
+      "no_of_token": "Number of tokens available",
+      "expire_date": "Expiration date of the token",
+      "date_created": "Timestamp when the token was created",
+      "last_modified": "Timestamp when the token record was last updated"
+    },
+    "semantic_tags": [
+      "token",
+      "HackerDay",
+      "user"
+    ]
+  },
+  "hackerday_plan": {
+    "description": "Defines various plans available for HackerDay users.",
+    "column_descriptions": {
+      "hackerday_plan_id": "Unique identifier for the plan",
+      "name": "Name of the plan",
+      "plan_id": "Identifier for the plan",
+      "gateway_plan_id": "Identifier for the plan in the payment gateway",
+      "price": "Price of the plan",
+      "discount_price": "Discounted price for the plan",
+      "discount_text": "Text describing the discount",
+      "discount_date": "Date when the discount is applicable",
+      "country": "Country where the plan is available",
+      "payment_country_id": "Identifier for the payment country",
+      "course_id": "Identifier for the associated course",
+      "trial_period": "Duration of the trial period",
+      "duration": "Duration of the plan",
+      "details": "Additional details about the plan",
+      "is_active": "Indicates if the plan is currently active",
+      "is_projex_plan": "Indicates if the plan is a Projex plan",
+      "display_plan": "Display name for the plan",
+      "display_order": "Order in which the plan is displayed",
+      "color_1": "Primary color associated with the plan",
+      "color_2": "Secondary color associated with the plan",
+      "number_of_sessions": "Number of sessions included in the plan",
+      "is_workshop": "Indicates if the plan includes workshops",
+      "is_lab": "Indicates if the plan includes labs",
+      "program_id": "Identifier for the associated program",
+      "date_created": "Timestamp when the plan was created",
+      "last_modified": "Timestamp when the plan record was last updated"
+    },
+    "semantic_tags": [
+      "plan",
+      "HackerDay",
+      "pricing"
+    ]
+  },
+  "payment_country": {
+    "description": "Stores information about countries for payment processing.",
+    "column_descriptions": {
+      "payment_country_id": "Unique identifier for the payment country",
+      "country_name": "Name of the country",
+      "country_code": "ISO code for the country",
+      "currency_symbol": "Symbol of the currency used in the country",
+      "currency_code": "ISO code for the currency",
+      "is_active": "Indicates if the country is active for payments",
+      "is_zero_decimal": "Indicates if the currency has no decimal places",
+      "date_created": "Timestamp when the country record was created",
+      "last_modified": "Timestamp when the country record was last updated"
+    },
+    "semantic_tags": [
+      "country",
+      "payment",
+      "currency"
+    ]
+  },
+  "hackerday_invite": {
+    "description": "Manages invitations sent for HackerDay events.",
+    "column_descriptions": {
+      "hackerday_invite_id": "Unique identifier for the invite",
+      "user_id": "Identifier for the user who sent the invite",
+      "hackerday_token_id": "Identifier for the associated HackerDay token",
+      "send_to": "Email or identifier of the invitee",
+      "date_created": "Timestamp when the invite was created",
+      "last_modified": "Timestamp when the invite record was last updated"
+    },
+    "semantic_tags": [
+      "invite",
+      "HackerDay",
+      "event"
+    ]
+  },
+  "hackerday_plan_category": {
+    "description": "Associates plans with their respective categories.",
+    "column_descriptions": {
+      "hackerday_plan_category_id": "Unique identifier for the plan category association",
+      "hackerday_plan_id": "Identifier for the associated HackerDay plan",
+      "category_id": "Identifier for the category",
+      "date_created": "Timestamp when the association was created",
+      "last_modified": "Timestamp when the association record was last updated"
+    },
+    "semantic_tags": [
+      "plan",
+      "category",
+      "HackerDay"
+    ]
+  },
+  "hackerday_request": {
+    "description": "Records user requests for information or support related to HackerDay.",
+    "column_descriptions": {
+      "hackerday_request_id": "Unique identifier for the request",
+      "name": "Name of the person making the request",
+      "email": "Email address of the requester",
+      "phone": "Phone number of the requester",
+      "date_created": "Timestamp when the request was created",
+      "last_modified": "Timestamp when the request record was last updated"
+    },
+    "semantic_tags": [
+      "request",
+      "HackerDay",
+      "support"
+    ]
+  },
+  "hellobar_campaign": {
+    "description": "Manages campaigns for HelloBar notifications.",
+    "column_descriptions": {
+      "hellobar_campaign_id": "Unique identifier for the campaign",
+      "campaign_name": "Name of the campaign",
+      "title": "Title displayed in the campaign",
+      "cta_text": "Call to action text in the campaign",
+      "type": "Type of the campaign",
+      "is_active": "Indicates if the campaign is currently active",
+      "targeting_json_data": "JSON data for targeting criteria",
+      "show_after_seconds": "Delay before the campaign is shown",
+      "redirect_url": "URL to redirect to when the campaign is interacted with",
+      "date_created": "Timestamp when the campaign was created",
+      "last_modified": "Timestamp when the campaign record was last updated"
+    },
+    "semantic_tags": [
+      "campaign",
+      "notification",
+      "marketing"
+    ]
+  },
+  "manipal_course": {
+    "description": "Stores information about courses offered at Manipal.",
+    "column_descriptions": {
+      "manipal_course_id": "Unique identifier for the course",
+      "course_id": "Identifier for the specific course",
+      "code": "Course code",
+      "fees": "Fees associated with the course"
+    },
+    "semantic_tags": [
+      "course",
+      "education",
+      "fees"
+    ]
+  },
+  "manipal_user": {
+    "description": "Contains details about users enrolled in courses at Manipal.",
+    "column_descriptions": {
+      "manipal_user_id": "Unique identifier for the user",
+      "user_id": "Identifier for the user",
+      "email": "User's email address",
+      "course_id": "Identifier for the course the user is enrolled in",
+      "course_code": "Code of the course the user is enrolled in",
+      "rollnum": "User's roll number",
+      "community_id": "Identifier for the user's community",
+      "section_code": "Code for the user's section",
+      "checksum": "Checksum for data integrity",
+      "date_created": "Timestamp when the user record was created",
+      "last_modified": "Timestamp when the user record was last modified"
+    },
+    "semantic_tags": [
+      "user",
+      "enrollment",
+      "education"
+    ]
+  },
+  "meet_attendance": {
+    "description": "Tracks attendance for meetings by users.",
+    "column_descriptions": {
+      "meet_attendance_id": "Unique identifier for the attendance record",
+      "meet_id": "Identifier for the meeting",
+      "user_id": "Identifier for the user attending the meeting",
+      "join_time": "Timestamp when the user joined the meeting",
+      "leave_time": "Timestamp when the user left the meeting",
+      "date_created": "Timestamp when the attendance record was created",
+      "last_modified": "Timestamp when the attendance record was last modified"
+    },
+    "semantic_tags": [
+      "attendance",
+      "meeting",
+      "tracking"
+    ]
+  },
+  "meet_binder": {
+    "description": "Stores information about meeting binders and their details.",
+    "column_descriptions": {
+      "meet_binder_id": "Unique identifier for the binder",
+      "binder_id": "Identifier for the specific binder",
+      "name": "Name of the binder",
+      "type": "Type of the binder",
+      "timings": "Timings associated with the binder",
+      "date_created": "Timestamp when the binder record was created",
+      "last_modified": "Timestamp when the binder record was last modified"
+    },
+    "semantic_tags": [
+      "binder",
+      "meeting",
+      "organization"
+    ]
+  },
+  "meet_demo": {
+    "description": "Contains details about demo meetings for courses.",
+    "column_descriptions": {
+      "meet_demo_id": "Unique identifier for the demo meeting",
+      "course_id": "Identifier for the course associated with the demo",
+      "batch_id": "Identifier for the batch conducting the demo",
+      "email": "Email of the user associated with the demo",
+      "meet_id": "Identifier for the demo meeting",
+      "session": "Session details for the demo",
+      "date_created": "Timestamp when the demo record was created",
+      "last_modified": "Timestamp when the demo record was last modified"
+    },
+    "semantic_tags": [
+      "demo",
+      "meeting",
+      "course"
+    ]
+  },
+  "meet_email": {
+    "description": "Tracks email communications related to meetings.",
+    "column_descriptions": {
+      "meet_email_id": "Unique identifier for the email record",
+      "meet_id": "Identifier for the meeting associated with the email",
+      "user_id": "Identifier for the user associated with the email",
+      "message_id": "Identifier for the email message",
+      "date_created": "Timestamp when the email record was created",
+      "last_modified": "Timestamp when the email record was last modified"
+    },
+    "semantic_tags": [
+      "email",
+      "communication",
+      "meeting"
+    ]
+  },
+  "meet_timeline": {
+    "description": "Records the timeline of events related to meetings.",
+    "column_descriptions": {
+      "meet_timeline_id": "Unique identifier for the timeline record",
+      "meet_id": "Identifier for the associated meeting",
+      "meet_binder_id": "Identifier for the associated binder",
+      "date_created": "Timestamp when the timeline record was created",
+      "last_modified": "Timestamp when the timeline record was last modified"
+    },
+    "semantic_tags": [
+      "timeline",
+      "meeting",
+      "events"
+    ]
+  },
+  "meet_user": {
+    "description": "Links users to their respective meeting binders.",
+    "column_descriptions": {
+      "meet_user_id": "Unique identifier for the user-binder link",
+      "meet_binder_id": "Identifier for the binder associated with the user",
+      "user_id": "Identifier for the user",
+      "date_created": "Timestamp when the user-binder link was created",
+      "last_modified": "Timestamp when the user-binder link was last modified"
+    },
+    "semantic_tags": [
+      "user",
+      "binder",
+      "meeting"
+    ]
+  },
+  "metrics": {
+    "description": "Stores various metrics related to user visits and engagement.",
+    "column_descriptions": {
+      "metrics_id": "Unique identifier for the metrics record",
+      "unique_visitors": "Count of unique visitors",
+      "adwords_visitors": "Count of visitors from AdWords",
+      "unique_users": "Count of unique users",
+      "metrics_date": "Date for which the metrics are recorded",
+      "date_created": "Timestamp when the metrics record was created",
+      "last_modified": "Timestamp when the metrics record was last modified"
+    },
+    "semantic_tags": [
+      "metrics",
+      "analytics",
+      "visitors"
+    ]
+  },
+  "miniproject_checkout": {
+    "description": "Tracks checkout details for mini-projects.",
+    "column_descriptions": {
+      "miniproject_checkout_id": "Unique identifier for the checkout record",
+      "usd_price": "Price in USD for the mini-project",
+      "inr_price": "Price in INR for the mini-project",
+      "date_created": "Timestamp when the checkout record was created",
+      "last_modified": "Timestamp when the checkout record was last modified"
+    },
+    "semantic_tags": [
+      "checkout",
+      "pricing",
+      "mini-project"
+    ]
+  },
+  "miniproject_selected": {
+    "description": "Stores selected mini-projects for users.",
+    "column_descriptions": {
+      "miniproject_selected_id": "Unique identifier for the selected mini-project",
+      "miniproject_checkout_id": "Identifier for the checkout process of the mini-project",
+      "project_id": "Identifier for the associated project",
+      "date_created": "Timestamp when the selection was made",
+      "last_modified": "Timestamp of the last modification"
+    },
+    "semantic_tags": [
+      "mini-project",
+      "selection",
+      "user"
+    ]
+  },
+  "notebook_faculty": {
+    "description": "Manages faculty access to notebooks.",
+    "column_descriptions": {
+      "notebook_faculty_id": "Unique identifier for the faculty access record",
+      "user_id": "Identifier for the user (faculty member)",
+      "access_type": "Type of access granted (e.g., read, write)",
+      "access_value": "Specific value related to the access type",
+      "date_created": "Timestamp when the access was granted",
+      "last_modified": "Timestamp of the last modification"
+    },
+    "semantic_tags": [
+      "faculty",
+      "access",
+      "notebook"
+    ]
+  },
+  "notification": {
+    "description": "Contains notifications sent to users.",
+    "column_descriptions": {
+      "notification_id": "Unique identifier for the notification",
+      "content": "Text content of the notification",
+      "type": "Type of notification (e.g., alert, reminder)",
+      "category_id": "Identifier for the notification category",
+      "date_created": "Timestamp when the notification was created",
+      "last_modified": "Timestamp of the last modification"
+    },
+    "semantic_tags": [
+      "notification",
+      "user",
+      "alert"
+    ]
+  },
+  "notification_category": {
+    "description": "Defines categories for organizing notifications.",
+    "column_descriptions": {
+      "notification_category_id": "Unique identifier for the notification category",
+      "category": "Name of the notification category",
+      "date_created": "Timestamp when the category was created",
+      "last_modified": "Timestamp of the last modification"
+    },
+    "semantic_tags": [
+      "notification",
+      "category",
+      "organization"
+    ]
+  },
+  "notification_batch": {
+    "description": "Links notifications to batches for bulk processing.",
+    "column_descriptions": {
+      "notification_batch_id": "Unique identifier for the notification batch",
+      "notification_id": "Identifier for the associated notification",
+      "batch_id": "Identifier for the batch of notifications",
+      "date_created": "Timestamp when the batch was created",
+      "last_modified": "Timestamp of the last modification"
+    },
+    "semantic_tags": [
+      "batch",
+      "notification",
+      "bulk"
+    ]
+  },
+  "notification_course": {
+    "description": "Associates notifications with specific courses.",
+    "column_descriptions": {
+      "notification_course_id": "Unique identifier for the notification-course association",
+      "notification_id": "Identifier for the associated notification",
+      "course_id": "Identifier for the associated course",
+      "date_created": "Timestamp when the association was created",
+      "last_modified": "Timestamp of the last modification"
+    },
+    "semantic_tags": [
+      "notification",
+      "course",
+      "association"
+    ]
+  },
+  "notification_preference": {
+    "description": "Stores user preferences for notification display.",
+    "column_descriptions": {
+      "notification_preference_id": "Unique identifier for the notification preference",
+      "user_id": "Identifier for the user",
+      "notification_category_id": "Identifier for the preferred notification category",
+      "to_show": "Indicates whether to show the notification",
+      "date_created": "Timestamp when the preference was created",
+      "last_modified": "Timestamp of the last modification"
+    },
+    "semantic_tags": [
+      "user",
+      "preference",
+      "notification"
+    ]
+  },
+  "notification_read": {
+    "description": "Tracks which notifications have been read by users.",
+    "column_descriptions": {
+      "notification_read_id": "Unique identifier for the read notification record",
+      "notification_id": "Identifier for the associated notification",
+      "user_id": "Identifier for the user who read the notification",
+      "date_created": "Timestamp when the notification was marked as read",
+      "last_modified": "Timestamp of the last modification"
+    },
+    "semantic_tags": [
+      "notification",
+      "read",
+      "tracking"
+    ]
+  },
+  "notification_user": {
+    "description": "Links notifications to specific users.",
+    "column_descriptions": {
+      "notification_user_id": "Unique identifier for the notification-user association",
+      "notification_id": "Identifier for the associated notification",
+      "user_id": "Identifier for the user",
+      "date_created": "Timestamp when the association was created",
+      "last_modified": "Timestamp of the last modification"
+    },
+    "semantic_tags": [
+      "notification",
+      "user",
+      "association"
+    ]
+  },
+  "otp_change_request": {
+    "description": "Records requests for changing OTP-related phone numbers.",
+    "column_descriptions": {
+      "otp_change_request_id": "Unique identifier for the OTP change request",
+      "user_id": "Identifier for the user making the request",
+      "old_phone": "User's old phone number",
+      "new_phone": "User's new phone number",
+      "date_created": "Timestamp when the request was created",
+      "last_modified": "Timestamp of the last modification"
+    },
+    "semantic_tags": [
+      "OTP",
+      "change",
+      "phone"
+    ]
+  },
+  "project_prereq": {
+    "description": "Defines prerequisite relationships between projects.",
+    "column_descriptions": {
+      "project_prereq_id": "Unique identifier for the prerequisite record",
+      "project_id": "Identifier for the main project",
+      "project_id_req": "Identifier for the required prerequisite project"
+    },
+    "semantic_tags": [
+      "project",
+      "prerequisite",
+      "relationship"
+    ]
+  },
+  "project_question_fav": {
+    "description": "Stores favorite questions associated with projects for users.",
+    "column_descriptions": {
+      "project_question_fav_id": "Unique identifier for the favorite question record",
+      "project_question_id": "Identifier for the project question",
+      "user_id": "Identifier for the user who favorited the question"
+    },
+    "semantic_tags": [
+      "project",
+      "questions",
+      "favorites"
+    ]
+  },
+  "project_quiz": {
+    "description": "Manages quizzes related to specific projects.",
+    "column_descriptions": {
+      "project_quiz_id": "Unique identifier for the quiz record",
+      "project_id": "Identifier for the associated project",
+      "quiz_id": "Identifier for the quiz",
+      "position": "Order of the quiz in the project",
+      "date_created": "Timestamp when the quiz was created",
+      "last_modified": "Timestamp when the quiz was last modified"
+    },
+    "semantic_tags": [
+      "project",
+      "quiz",
+      "assessment"
+    ]
+  },
+  "project_rating": {
+    "description": "Records user ratings and feedback for projects.",
+    "column_descriptions": {
+      "project_rating_id": "Unique identifier for the rating record",
+      "project_id": "Identifier for the rated project",
+      "user_id": "Identifier for the user who provided the rating",
+      "rating": "Numeric rating given by the user",
+      "feedback": "User's comments about the project",
+      "date_created": "Timestamp when the rating was created",
+      "last_modified": "Timestamp when the rating was last modified"
+    },
+    "semantic_tags": [
+      "project",
+      "rating",
+      "feedback"
+    ]
+  },
+  "project_recommendation": {
+    "description": "Stores recommendations of projects based on user preferences.",
+    "column_descriptions": {
+      "project_recommendation_id": "Unique identifier for the recommendation record",
+      "project_id": "Identifier for the project being recommended",
+      "recommended_project_id": "Identifier for the recommended project",
+      "date_created": "Timestamp when the recommendation was created",
+      "last_modified": "Timestamp when the recommendation was last modified"
+    },
+    "semantic_tags": [
+      "project",
+      "recommendation",
+      "suggestion"
+    ]
+  },
+  "project_reference_video": {
+    "description": "Holds reference videos associated with specific project dates.",
+    "column_descriptions": {
+      "project_reference_video_id": "Unique identifier for the reference video record",
+      "project_date_id": "Identifier for the project date",
+      "project_date_ref_id": "Identifier for the referenced project date",
+      "sequence": "Order of the video in the list",
+      "description": "Description of the reference video",
+      "is_active": "Status indicating if the video is active",
+      "date_created": "Timestamp when the video record was created",
+      "last_modified": "Timestamp when the video record was last modified"
+    },
+    "semantic_tags": [
+      "project",
+      "video",
+      "reference"
+    ]
+  },
+  "project_subtitles": {
+    "description": "Manages subtitles for project videos in various languages.",
+    "column_descriptions": {
+      "project_subtitle_id": "Unique identifier for the subtitle record",
+      "project_id": "Identifier for the associated project",
+      "project_date_id": "Identifier for the project date",
+      "language": "Language of the subtitle",
+      "subtitle_url": "URL link to the subtitle file",
+      "date_created": "Timestamp when the subtitle was created",
+      "last_modified": "Timestamp when the subtitle was last modified"
+    },
+    "semantic_tags": [
+      "project",
+      "subtitles",
+      "language"
+    ]
+  },
+  "project_suggestion": {
+    "description": "Records suggestions made by users for projects.",
+    "column_descriptions": {
+      "project_suggestion_id": "Unique identifier for the suggestion record",
+      "user_id": "Identifier for the user who made the suggestion",
+      "suggestion": "Text of the user's suggestion",
+      "date_created": "Timestamp when the suggestion was created",
+      "last_modified": "Timestamp when the suggestion was last modified"
+    },
+    "semantic_tags": [
+      "project",
+      "suggestion",
+      "user"
+    ]
+  },
+  "project_user": {
+    "description": "Links users to specific projects they are associated with.",
+    "column_descriptions": {
+      "project_user_id": "Unique identifier for the user-project association",
+      "project_id": "Identifier for the associated project",
+      "user_id": "Identifier for the user",
+      "date_created": "Timestamp when the association was created",
+      "last_modified": "Timestamp when the association was last modified"
+    },
+    "semantic_tags": [
+      "project",
+      "user",
+      "association"
+    ]
+  },
+  "project_user_answer": {
+    "description": "Stores answers provided by users for project-related questions.",
+    "column_descriptions": {
+      "project_user_answer_id": "Unique identifier for the user answer record",
+      "project_user_question_id": "Identifier for the project user question",
+      "answer_description": "Text of the user's answer",
+      "user_id": "Identifier for the user who provided the answer",
+      "is_attention": "Flag indicating if the answer requires attention",
+      "is_active": "Status indicating if the answer is active",
+      "date_created": "Timestamp when the answer was created",
+      "last_modified": "Timestamp when the answer was last modified"
+    },
+    "semantic_tags": [
+      "project",
+      "user",
+      "answers"
+    ]
+  },
+  "podcast": {
+    "description": "Stores information about various podcasts and their details.",
+    "column_descriptions": {
+      "podcast_id": "Unique podcast identifier",
+      "title": "Title of the podcast",
+      "keyword": "Main keyword associated with the podcast",
+      "meta_keywords": "SEO keywords for the podcast",
+      "meta_title": "SEO title for the podcast",
+      "meta_description": "SEO description for the podcast",
+      "content": "Content or description of the podcast episode",
+      "resource_url": "Link to resources related to the podcast",
+      "podcast_url": "URL to listen to the podcast",
+      "speaker_name": "Name of the podcast speaker",
+      "speaker_designation": "Designation of the podcast speaker",
+      "speaker_bio": "Biography of the podcast speaker",
+      "linkedin_url": "LinkedIn profile link of the speaker",
+      "picture_url": "Image associated with the podcast",
+      "is_active": "Indicates if the podcast is currently active",
+      "date_created": "Date when the podcast entry was created",
+      "last_modified": "Date when the podcast entry was last modified"
+    },
+    "semantic_tags": [
+      "podcast",
+      "media",
+      "speaker"
+    ]
+  },
+  "popular_lp_selection": {
+    "description": "Tracks popular landing page selections made by users.",
+    "column_descriptions": {
+      "popular_lp_selection_id": "Unique identifier for the selection",
+      "popular_path_id": "Identifier for the popular landing page",
+      "user_id": "Identifier for the user making the selection",
+      "is_active": "Indicates if the selection is currently active",
+      "date_created": "Date when the selection was created",
+      "last_modified": "Date when the selection was last modified"
+    },
+    "semantic_tags": [
+      "landing page",
+      "user selection",
+      "analytics"
+    ]
+  },
+  "portfolio_code": {
+    "description": "Stores code snippets and related files for user portfolios.",
+    "column_descriptions": {
+      "portfolio_code_id": "Unique identifier for the code entry",
+      "portfolio_user_id": "Identifier for the user associated with the portfolio",
+      "file_name": "Name of the file containing the code snippet",
+      "code_snippet": "The actual code snippet",
+      "file_type": "Type of the file (e.g., .js, .html)",
+      "sort_order": "Order in which the code snippets are displayed",
+      "date_created": "Date when the code entry was created",
+      "last_modified": "Date when the code entry was last modified"
+    },
+    "semantic_tags": [
+      "portfolio",
+      "code",
+      "development"
+    ]
+  },
+  "portfolio_user": {
+    "description": "Stores information about users and their associated portfolio projects.",
+    "column_descriptions": {
+      "portfolio_user_id": "Unique identifier for the portfolio user",
+      "portfolio_project_id": "Identifier for the associated portfolio project",
+      "user_linkedin_id": "LinkedIn identifier for the user",
+      "video_url": "URL to a video related to the portfolio",
+      "grade": "Grade or score for the portfolio",
+      "visible": "Indicates if the portfolio is visible to others",
+      "date_created": "Date when the user portfolio entry was created",
+      "last_modified": "Date when the user portfolio entry was last modified"
+    },
+    "semantic_tags": [
+      "portfolio",
+      "user",
+      "projects"
+    ]
+  },
+  "portfolio_project": {
+    "description": "Stores information about various projects within user portfolios.",
+    "column_descriptions": {
+      "portfolio_project_id": "Unique identifier for the portfolio project",
+      "course_id": "Identifier for the course related to the project",
+      "headline": "Headline or title of the project",
+      "statement": "Description or statement about the project",
+      "dataset": "Dataset associated with the project",
+      "date_created": "Date when the project entry was created",
+      "last_modified": "Date when the project entry was last modified"
+    },
+    "semantic_tags": [
+      "project",
+      "portfolio",
+      "course"
+    ]
+  },
+  "user_linkedin": {
+    "description": "Stores LinkedIn profile information for users.",
+    "column_descriptions": {
+      "user_linkedin_id": "Unique identifier for the LinkedIn user entry",
+      "user_id": "Identifier for the user associated with the LinkedIn profile",
+      "linkedin_id": "LinkedIn identifier for the user",
+      "profile_url": "URL to the user's LinkedIn profile",
+      "picture_url": "Profile picture URL of the user",
+      "headline": "User's LinkedIn headline",
+      "location": "User's location as per LinkedIn",
+      "connections": "Number of connections the user has on LinkedIn",
+      "summary": "Summary of the user's professional background",
+      "industry": "Industry in which the user works",
+      "date_created": "Date when the LinkedIn entry was created",
+      "last_modified": "Date when the LinkedIn entry was last modified"
+    },
+    "semantic_tags": [
+      "LinkedIn",
+      "user",
+      "profile"
+    ]
+  },
+  "portfolio_feedback": {
+    "description": "Stores feedback provided by faculty on user portfolios.",
+    "column_descriptions": {
+      "portfolio_feedback_id": "Unique identifier for the feedback entry",
+      "portfolio_user_id": "Identifier for the user associated with the portfolio",
+      "faculty_id": "Identifier for the faculty providing feedback",
+      "faculty_feedback": "Feedback comments from the faculty",
+      "date_created": "Date when the feedback entry was created",
+      "last_modified": "Date when the feedback entry was last modified"
+    },
+    "semantic_tags": [
+      "feedback",
+      "portfolio",
+      "faculty"
+    ]
+  },
+  "portfolio_grade": {
+    "description": "Stores grades assigned to user portfolios based on criteria.",
+    "column_descriptions": {
+      "portfolio_grade_id": "Unique identifier for the grade entry",
+      "portfolio_user_id": "Identifier for the user associated with the portfolio",
+      "portfolio_grade_criteria_id": "Identifier for the grading criteria used",
+      "grade": "Assigned grade for the portfolio",
+      "date_created": "Date when the grade entry was created",
+      "last_modified": "Date when the grade entry was last modified"
+    },
+    "semantic_tags": [
+      "grade",
+      "portfolio",
+      "evaluation"
+    ]
+  },
+  "portfolio_grade_criteria": {
+    "description": "Defines criteria for grading user portfolios.",
+    "column_descriptions": {
+      "portfolio_grade_criteria_id": "Unique identifier for the grading criteria",
+      "criteria_name": "Name of the grading criteria",
+      "criteria_color": "Color associated with the criteria",
+      "is_active": "Indicates if the criteria is currently active",
+      "date_created": "Date when the criteria entry was created",
+      "last_modified": "Date when the criteria entry was last modified"
+    },
+    "semantic_tags": [
+      "grading",
+      "criteria",
+      "portfolio"
+    ]
+  },
+  "program": {
+    "description": "Stores information about various programs offered.",
+    "column_descriptions": {
+      "program_id": "Unique identifier for the program",
+      "title": "Title of the program",
+      "keyword": "Main keyword associated with the program",
+      "brochure_pdf": "PDF brochure for the program",
+      "project_list_pdf": "PDF listing projects associated with the program",
+      "program_image": "Image representing the program",
+      "date_created": "Date when the program entry was created",
+      "last_modified": "Date when the program entry was last modified"
+    },
+    "semantic_tags": [
+      "program",
+      "education",
+      "offering"
+    ]
+  },
+  "project_enroll": {
+    "description": "Records user enrollments in specific projects.",
+    "column_descriptions": {
+      "project_enroll_id": "Unique enrollment identifier",
+      "project_id": "Identifier for the associated project",
+      "user_id": "Identifier for the enrolled user",
+      "stripe_token_id": "Token for Stripe payment processing",
+      "stripe_customer_id": "Identifier for the Stripe customer",
+      "ccavenue_order_id": "Identifier for the CCAvenue order",
+      "amount": "Amount paid for the enrollment",
+      "popular_path_id": "Identifier for the popular path associated with the project",
+      "is_active": "Indicates if the enrollment is active",
+      "is_refund": "Indicates if the enrollment has been refunded",
+      "date_created": "Timestamp when the enrollment was created",
+      "last_modified": "Timestamp when the enrollment was last modified"
+    },
+    "semantic_tags": [
+      "enrollment",
+      "project",
+      "payment"
+    ]
+  },
+  "project_faculty": {
+    "description": "Links faculty members to specific projects.",
+    "column_descriptions": {
+      "project_faculty_id": "Unique faculty-project association identifier",
+      "project_id": "Identifier for the associated project",
+      "faculty_id": "Identifier for the faculty member",
+      "date_created": "Timestamp when the association was created",
+      "last_modified": "Timestamp when the association was last modified"
+    },
+    "semantic_tags": [
+      "faculty",
+      "project",
+      "association"
+    ]
+  },
+  "project_faculty_rating": {
+    "description": "Stores ratings and feedback for faculty associated with projects.",
+    "column_descriptions": {
+      "project_faculty_rating_id": "Unique rating identifier",
+      "project_id": "Identifier for the associated project",
+      "faculty_id": "Identifier for the faculty member being rated",
+      "user_id": "Identifier for the user providing the rating",
+      "rating": "Numerical rating given by the user",
+      "feedback": "Text feedback provided by the user",
+      "date_created": "Timestamp when the rating was created",
+      "last_modified": "Timestamp when the rating was last modified"
+    },
+    "semantic_tags": [
+      "rating",
+      "faculty",
+      "feedback"
+    ]
+  },
+  "project_feedback": {
+    "description": "Collects feedback responses related to projects.",
+    "column_descriptions": {
+      "project_feedback_id": "Unique feedback identifier",
+      "feedback_id": "Identifier for the feedback form",
+      "feedback_questions_id": "Identifier for the specific question asked",
+      "feedback_answers_id": "Identifier for the specific answer given",
+      "project_id": "Identifier for the associated project",
+      "answer": "User's answer to the feedback question",
+      "user_id": "Identifier for the user providing feedback",
+      "date_created": "Timestamp when the feedback was created",
+      "last_modified": "Timestamp when the feedback was last modified"
+    },
+    "semantic_tags": [
+      "feedback",
+      "project",
+      "responses"
+    ]
+  },
+  "project_filter": {
+    "description": "Defines filters applied to projects for categorization or search.",
+    "column_descriptions": {
+      "project_filter_id": "Unique filter identifier",
+      "project_id": "Identifier for the associated project",
+      "filter_id": "Identifier for the applied filter",
+      "date_created": "Timestamp when the filter was created",
+      "last_modified": "Timestamp when the filter was last modified"
+    },
+    "semantic_tags": [
+      "filter",
+      "project",
+      "categorization"
+    ]
+  },
+  "project_group": {
+    "description": "Associates users with specific project groups.",
+    "column_descriptions": {
+      "project_group_id": "Unique group association identifier",
+      "project_id": "Identifier for the associated project",
+      "group_number": "Identifier for the specific group",
+      "user_id": "Identifier for the user in the group",
+      "date_created": "Timestamp when the group association was created",
+      "last_modified": "Timestamp when the group association was last modified"
+    },
+    "semantic_tags": [
+      "group",
+      "project",
+      "association"
+    ]
+  },
+  "project_lab": {
+    "description": "Manages lab-related information for projects.",
+    "column_descriptions": {
+      "project_lab_id": "Unique lab identifier",
+      "project_id": "Identifier for the associated project",
+      "plan_id": "Identifier for the associated plan",
+      "team_id": "Identifier for the associated team",
+      "json_key": "Key for JSON configuration",
+      "lab_id": "Identifier for the specific lab",
+      "type": "Type of lab associated with the project",
+      "is_active": "Indicates if the lab is active",
+      "date_created": "Timestamp when the lab was created",
+      "last_modified": "Timestamp when the lab was last modified"
+    },
+    "semantic_tags": [
+      "lab",
+      "project",
+      "management"
+    ]
+  },
+  "project_library": {
+    "description": "Stores resources and materials related to projects.",
+    "column_descriptions": {
+      "project_library_id": "Unique library resource identifier",
+      "project_id": "Identifier for the associated project",
+      "user_id": "Identifier for the user who added the resource",
+      "title": "Title of the resource",
+      "description": "Description of the resource",
+      "aws_path": "Path to the resource in AWS storage",
+      "date_created": "Timestamp when the resource was created",
+      "last_modified": "Timestamp when the resource was last modified"
+    },
+    "semantic_tags": [
+      "library",
+      "project",
+      "resources"
+    ]
+  },
+  "project_mlops": {
+    "description": "Links MLOps practices and tools to specific projects.",
+    "column_descriptions": {
+      "project_mlops_id": "Unique MLOps identifier",
+      "mlops_id": "Identifier for the MLOps tool or practice",
+      "project_id": "Identifier for the associated project",
+      "date_created": "Timestamp when the MLOps entry was created",
+      "last_modified": "Timestamp when the MLOps entry was last modified"
+    },
+    "semantic_tags": [
+      "mlops",
+      "project",
+      "tools"
+    ]
+  },
+  "project_notes": {
+    "description": "Holds notes and comments related to projects.",
+    "column_descriptions": {
+      "project_notes_id": "Unique notes identifier",
+      "project_id": "Identifier for the associated project",
+      "type": "Type of note (e.g., comment, observation)",
+      "notes": "Content of the notes",
+      "date_created": "Timestamp when the notes were created",
+      "last_modified": "Timestamp when the notes were last modified"
+    },
+    "semantic_tags": [
+      "notes",
+      "project",
+      "comments"
+    ]
+  },
+  "program_project": {
+    "description": "Links programs to their associated projects.",
+    "column_descriptions": {
+      "program_project_id": "Unique identifier for the program-project relationship",
+      "program_id": "Identifier for the associated program",
+      "project_id": "Identifier for the associated project",
+      "is_displayed": "Indicates if the project is currently displayed",
+      "is_default": "Indicates if this is the default project for the program",
+      "date_removed": "Date when the project was removed, if applicable",
+      "date_created": "Date when the record was created",
+      "last_modified": "Date when the record was last modified"
+    },
+    "semantic_tags": [
+      "program",
+      "project",
+      "association"
+    ]
+  },
+  "project_access": {
+    "description": "Records user access details for specific projects.",
+    "column_descriptions": {
+      "project_access_id": "Unique identifier for project access records",
+      "project_id": "Identifier for the associated project",
+      "project_materials_id": "Identifier for the materials related to the project",
+      "user_id": "Identifier for the user accessing the project",
+      "copied_text": "Text that was copied from the project",
+      "download_code": "Code used for downloading project materials",
+      "ip_address": "IP address of the user accessing the project",
+      "date_created": "Date when the record was created",
+      "last_modified": "Date when the record was last modified"
+    },
+    "semantic_tags": [
+      "access",
+      "user",
+      "project"
+    ]
+  },
+  "project_materials": {
+    "description": "Stores materials associated with projects.",
+    "column_descriptions": {
+      "project_materials_id": "Unique identifier for project materials",
+      "project_id": "Identifier for the associated project",
+      "name": "Name of the material",
+      "aws_path": "Path to the material stored in AWS",
+      "is_active": "Indicates if the material is currently active",
+      "date_created": "Date when the record was created",
+      "last_modified": "Date when the record was last modified"
+    },
+    "semantic_tags": [
+      "materials",
+      "project",
+      "storage"
+    ]
+  },
+  "project_answer": {
+    "description": "Stores answers provided by users to project-related questions.",
+    "column_descriptions": {
+      "project_answer_id": "Unique identifier for project answers",
+      "project_question_id": "Identifier for the associated question",
+      "user_id": "Identifier for the user who provided the answer",
+      "answer": "The answer text provided by the user",
+      "vote_count": "Number of votes received for the answer",
+      "aws_path": "Path to any related media stored in AWS",
+      "date_created": "Date when the record was created",
+      "last_modified": "Date when the record was last modified"
+    },
+    "semantic_tags": [
+      "answer",
+      "question",
+      "user"
+    ]
+  },
+  "project_question": {
+    "description": "Stores questions posed by users regarding projects.",
+    "column_descriptions": {
+      "project_question_id": "Unique identifier for project questions",
+      "project_id": "Identifier for the associated project",
+      "user_id": "Identifier for the user who posed the question",
+      "question": "The question text",
+      "vote_count": "Number of votes received for the question",
+      "aws_path": "Path to any related media stored in AWS",
+      "date_created": "Date when the record was created",
+      "last_modified": "Date when the record was last modified"
+    },
+    "semantic_tags": [
+      "question",
+      "project",
+      "user"
+    ]
+  },
+  "project_category": {
+    "description": "Associates projects with their respective categories.",
+    "column_descriptions": {
+      "project_category_id": "Unique identifier for project categories",
+      "project_id": "Identifier for the associated project",
+      "category_id": "Identifier for the associated category",
+      "path_order": "Order of the category in relation to the project",
+      "date_created": "Date when the record was created",
+      "last_modified": "Date when the record was last modified"
+    },
+    "semantic_tags": [
+      "category",
+      "project",
+      "association"
+    ]
+  },
+  "project_chat": {
+    "description": "Records chat messages related to specific projects.",
+    "column_descriptions": {
+      "project_chat_id": "Unique identifier for project chat messages",
+      "project_id": "Identifier for the associated project",
+      "user_id": "Identifier for the user who sent the message",
+      "group_number": "Identifier for the chat group",
+      "message": "The chat message content",
+      "date_created": "Date when the record was created",
+      "last_modified": "Date when the record was last modified"
+    },
+    "semantic_tags": [
+      "chat",
+      "project",
+      "communication"
+    ]
+  },
+  "project_comment": {
+    "description": "Stores comments made by users on projects.",
+    "column_descriptions": {
+      "comment_id": "Unique identifier for comments",
+      "user_id": "Identifier for the user who made the comment",
+      "project_id": "Identifier for the associated project",
+      "comment": "The comment text",
+      "is_displayed": "Indicates if the comment is currently displayed",
+      "date_created": "Date when the record was created",
+      "last_modified": "Date when the record was last modified"
+    },
+    "semantic_tags": [
+      "comment",
+      "project",
+      "user"
+    ]
+  },
+  "project_datetime": {
+    "description": "Stores scheduling information for projects, including start and end times.",
+    "column_descriptions": {
+      "project_date_id": "Unique identifier for project date records",
+      "project_id": "Identifier for the associated project",
+      "topic_name": "Name of the topic related to the project",
+      "project_start_time": "Start time of the project",
+      "project_end_time": "End time of the project",
+      "livestream_url": "URL for the project's livestream",
+      "recording_url": "URL for the project's recording",
+      "mux_playback_id": "Identifier for playback in Mux",
+      "maestra_file_id": "Identifier for the Maestra file",
+      "is_mux": "Indicates if the project uses Mux for video",
+      "video_duration": "Duration of the project video",
+      "topic_order": "Order of the topic in relation to the project",
+      "status": "Current status of the project timing",
+      "date_created": "Date when the record was created",
+      "last_modified": "Date when the record was last modified"
+    },
+    "semantic_tags": [
+      "datetime",
+      "project",
+      "scheduling"
+    ]
+  },
+  "project_datetime_log": {
+    "description": "Logs changes to project date and time information.",
+    "column_descriptions": {
+      "project_datetime_log_id": "Unique identifier for datetime log entries",
+      "project_date_id": "Identifier for the associated project date record",
+      "new_project_date_id": "Identifier for the new project date record after change",
+      "date_created": "Date when the log entry was created",
+      "last_modified": "Date when the log entry was last modified"
+    },
+    "semantic_tags": [
+      "log",
+      "datetime",
+      "project"
+    ]
+  },
+  "project_user_answer_upvote": {
+    "description": "Records upvotes for user answers in projects.",
+    "column_descriptions": {
+      "project_user_answer_upvote_id": "Unique identifier for the upvote",
+      "project_user_answer_id": "Identifier for the answer being upvoted",
+      "user_id": "Identifier for the user who upvoted",
+      "vote": "Indicates the upvote status",
+      "date_created": "Timestamp of when the upvote was created",
+      "last_modified": "Timestamp of the last modification to the upvote record"
+    },
+    "semantic_tags": [
+      "upvote",
+      "user",
+      "answer"
+    ]
+  },
+  "project_user_engagement": {
+    "description": "Tracks user engagement metrics for projects.",
+    "column_descriptions": {
+      "project_user_engagement_id": "Unique identifier for the engagement record",
+      "project_date_id": "Identifier for the specific project date",
+      "project_id": "Identifier for the project",
+      "user_id": "Identifier for the user engaged",
+      "is_completed": "Indicates if the project engagement is completed",
+      "last_watched_time": "Timestamp of the last time the project was watched",
+      "view_time": "Total time spent viewing the project",
+      "last_viewed": "Timestamp of the last view of the project",
+      "date_created": "Timestamp of when the engagement record was created",
+      "last_modified": "Timestamp of the last modification to the engagement record"
+    },
+    "semantic_tags": [
+      "engagement",
+      "user",
+      "project"
+    ]
+  },
+  "project_user_question": {
+    "description": "Stores questions submitted by users for projects.",
+    "column_descriptions": {
+      "project_user_question_id": "Unique identifier for the user question",
+      "question_title": "Title of the question",
+      "question_description": "Detailed description of the question",
+      "user_id": "Identifier for the user who asked the question",
+      "project_id": "Identifier for the related project",
+      "project_date_id": "Identifier for the specific project date",
+      "question_type": "Type/category of the question",
+      "is_active": "Indicates if the question is currently active",
+      "date_created": "Timestamp of when the question was created",
+      "last_modified": "Timestamp of the last modification to the question"
+    },
+    "semantic_tags": [
+      "question",
+      "user",
+      "project"
+    ]
+  },
+  "project_user_question_upvote": {
+    "description": "Records upvotes for user questions in projects.",
+    "column_descriptions": {
+      "project_user_question_upvote_id": "Unique identifier for the upvote",
+      "project_user_question_id": "Identifier for the question being upvoted",
+      "user_id": "Identifier for the user who upvoted",
+      "vote": "Indicates the upvote status",
+      "date_created": "Timestamp of when the upvote was created",
+      "last_modified": "Timestamp of the last modification to the upvote record"
+    },
+    "semantic_tags": [
+      "upvote",
+      "user",
+      "question"
+    ]
+  },
+  "project_user_rating": {
+    "description": "Stores ratings and feedback provided by users for projects.",
+    "column_descriptions": {
+      "project_user_rating_id": "Unique identifier for the rating",
+      "project_id": "Identifier for the rated project",
+      "ratings_for_user_id": "Identifier for the user receiving the rating",
+      "ratings_by_user_id": "Identifier for the user giving the rating",
+      "ratings": "Numeric rating value",
+      "feedback": "User's feedback regarding the rating",
+      "date_created": "Timestamp of when the rating was created",
+      "last_modified": "Timestamp of the last modification to the rating"
+    },
+    "semantic_tags": [
+      "rating",
+      "feedback",
+      "user"
+    ]
+  },
+  "project_vote": {
+    "description": "Records votes cast by users for projects.",
+    "column_descriptions": {
+      "project_vote_id": "Unique identifier for the vote",
+      "project_id": "Identifier for the project being voted on",
+      "user_id": "Identifier for the user who voted",
+      "vote": "Indicates the vote status",
+      "star": "Star rating given by the user",
+      "date_created": "Timestamp of when the vote was created",
+      "last_modified": "Timestamp of the last modification to the vote record"
+    },
+    "semantic_tags": [
+      "vote",
+      "user",
+      "project"
+    ]
+  },
+  "project_vote_answer": {
+    "description": "Records votes for specific answers provided in projects.",
+    "column_descriptions": {
+      "project_vote_answer_id": "Unique identifier for the vote on an answer",
+      "project_answer_id": "Identifier for the answer being voted on",
+      "user_id": "Identifier for the user who voted",
+      "date_created": "Timestamp of when the vote was created",
+      "last_modified": "Timestamp of the last modification to the vote record"
+    },
+    "semantic_tags": [
+      "vote",
+      "answer",
+      "user"
+    ]
+  },
+  "project_vote_question": {
+    "description": "Records votes for specific questions submitted in projects.",
+    "column_descriptions": {
+      "project_vote_question_id": "Unique identifier for the vote on a question",
+      "project_question_id": "Identifier for the question being voted on",
+      "user_id": "Identifier for the user who voted",
+      "date_created": "Timestamp of when the vote was created",
+      "last_modified": "Timestamp of the last modification to the vote record"
+    },
+    "semantic_tags": [
+      "vote",
+      "question",
+      "user"
+    ]
+  },
+  "promotion": {
+    "description": "Stores promotional content for projects and events.",
+    "column_descriptions": {
+      "promotion_id": "Unique identifier for the promotion",
+      "image_url": "URL of the promotional image",
+      "alt_text": "Alternative text for the promotional image",
+      "link_url": "URL to which the promotion links",
+      "event": "Event associated with the promotion",
+      "descb": "Description of the promotion",
+      "is_visible": "Indicates if the promotion is currently visible",
+      "in_main_page": "Indicates if the promotion appears on the main page",
+      "date_created": "Timestamp of when the promotion was created",
+      "last_modified": "Timestamp of the last modification to the promotion"
+    },
+    "semantic_tags": [
+      "promotion",
+      "event",
+      "marketing"
+    ]
+  },
+  "promotion_category": {
+    "description": "Links promotions to their respective categories.",
+    "column_descriptions": {
+      "promotion_category_id": "Unique identifier for the promotion category link",
+      "promotion_id": "Identifier for the associated promotion",
+      "category_id": "Identifier for the category linked to the promotion",
+      "date_created": "Timestamp of when the category link was created",
+      "last_modified": "Timestamp of the last modification to the category link"
+    },
+    "semantic_tags": [
+      "promotion",
+      "category",
+      "link"
+    ]
+  },
+  "webinar_times": {
+    "description": "Stores the timing details for webinars.",
+    "column_descriptions": {
+      "webinar_times_id": "Unique identifier for the webinar timing entry",
+      "webinar_id": "Identifier for the associated webinar",
+      "start_time": "Start time of the webinar",
+      "end_time": "End time of the webinar",
+      "date_created": "Timestamp when the entry was created",
+      "last_modified": "Timestamp when the entry was last modified"
+    },
+    "semantic_tags": [
+      "webinar",
+      "timing",
+      "schedule"
+    ]
+  },
+  "webinar_user": {
+    "description": "Tracks users registered for webinars.",
+    "column_descriptions": {
+      "webinar_user_id": "Unique identifier for the webinar user entry",
+      "webinar_id": "Identifier for the associated webinar",
+      "user_id": "Identifier for the registered user",
+      "course_id": "Identifier for the associated course",
+      "url": "Registration URL for the user",
+      "registrant_key": "Unique key for the registrant",
+      "date_created": "Timestamp when the entry was created",
+      "last_modified": "Timestamp when the entry was last modified"
+    },
+    "semantic_tags": [
+      "webinar",
+      "registration",
+      "user"
+    ]
+  },
+  "workshop": {
+    "description": "Stores details about workshops related to webinars.",
+    "column_descriptions": {
+      "workshop_id": "Unique identifier for the workshop",
+      "user_id": "Identifier for the user who created the workshop",
+      "webinar_id": "Identifier for the associated webinar",
+      "title": "Title of the workshop",
+      "keyword": "Primary keyword associated with the workshop",
+      "meta_title": "Meta title for SEO purposes",
+      "meta_keywords": "Meta keywords for SEO purposes",
+      "meta_desc": "Meta description for SEO purposes",
+      "desc": "Description of the workshop",
+      "workshop_timing": "Timing details for the workshop",
+      "architecture_diagram": "URL for the workshop architecture diagram",
+      "architecture_video": "URL for the workshop architecture video",
+      "recording_url": "URL for the workshop recording",
+      "is_active": "Indicates if the workshop is currently active",
+      "date_created": "Timestamp when the entry was created",
+      "last_modified": "Timestamp when the entry was last modified"
+    },
+    "semantic_tags": [
+      "workshop",
+      "details",
+      "webinar"
+    ]
+  },
+  "zoom_user": {
+    "description": "Tracks Zoom users associated with webinars and courses.",
+    "column_descriptions": {
+      "zoom_user_id": "Unique identifier for the Zoom user entry",
+      "zoom_id": "Identifier for the Zoom account",
+      "user_id": "Identifier for the associated user",
+      "course_id": "Identifier for the associated course",
+      "registrant_id": "Identifier for the registrant in Zoom",
+      "url": "URL for the Zoom user profile",
+      "date_created": "Timestamp when the entry was created",
+      "last_modified": "Timestamp when the entry was last modified"
+    },
+    "semantic_tags": [
+      "zoom",
+      "user",
+      "integration"
+    ]
+  },
+  "zoom_webhook": {
+    "description": "Stores information about events received from Zoom webhooks.",
+    "column_descriptions": {
+      "zoom_webhook_id": "Unique identifier for the Zoom webhook entry",
+      "event_id": "Identifier for the specific event received",
+      "date_created": "Timestamp when the entry was created",
+      "last_modified": "Timestamp when the entry was last modified"
+    },
+    "semantic_tags": [
+      "zoom",
+      "webhook",
+      "event"
+    ]
+  },
+  "speaker": {
+    "description": "Stores information about speakers and their bios.",
+    "column_descriptions": {
+      "speaker_id": "Unique speaker identifier",
+      "name": "Speaker's name",
+      "short_bio": "Brief biography of the speaker",
+      "detailed_bio": "In-depth biography of the speaker",
+      "image_url": "URL of the speaker's image",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "speaker",
+      "bio",
+      "profile"
+    ]
+  },
+  "subscription_pause_log": {
+    "description": "Logs the pauses in user subscriptions.",
+    "column_descriptions": {
+      "subscription_pause_log_id": "Unique log identifier",
+      "hackerday_enroll_id": "Identifier for the enrolled hackerday",
+      "pause_start": "Timestamp when the subscription pause started",
+      "pause_end": "Timestamp when the subscription pause ended",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "subscription",
+      "pause",
+      "log"
+    ]
+  },
+  "supplement": {
+    "description": "Contains supplementary materials for courses.",
+    "column_descriptions": {
+      "supplement_id": "Unique supplement identifier",
+      "course_id": "Identifier for the associated course",
+      "supplement_name": "Name of the supplement",
+      "type": "Type of the supplement",
+      "filename": "File name of the supplement material",
+      "description": "Description of the supplement",
+      "is_visible": "Visibility status of the supplement",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "supplement",
+      "course",
+      "material"
+    ]
+  },
+  "tag_question": {
+    "description": "Associates tags with course questions.",
+    "column_descriptions": {
+      "tag_question_id": "Unique association identifier",
+      "tag_id": "Identifier for the associated tag",
+      "course_question_id": "Identifier for the associated course question",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "tag",
+      "question",
+      "association"
+    ]
+  },
+  "tags": {
+    "description": "Stores tags for categorizing content.",
+    "column_descriptions": {
+      "tag_id": "Unique tag identifier",
+      "tag_name": "Name of the tag",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "tag",
+      "category",
+      "label"
+    ]
+  },
+  "team": {
+    "description": "Stores information about teams within organizations.",
+    "column_descriptions": {
+      "team_id": "Unique team identifier",
+      "name": "Name of the team",
+      "organization_id": "Identifier for the associated organization",
+      "team_leader_id": "Identifier for the team leader",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "team",
+      "organization",
+      "leadership"
+    ]
+  },
+  "team_member": {
+    "description": "Links users to their respective teams.",
+    "column_descriptions": {
+      "team_member_id": "Unique team member identifier",
+      "team_id": "Identifier for the associated team",
+      "user_id": "Identifier for the associated user",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "team",
+      "member",
+      "association"
+    ]
+  },
+  "testimonial": {
+    "description": "Stores user testimonials for courses.",
+    "column_descriptions": {
+      "testimonial_id": "Unique testimonial identifier",
+      "user_id": "Identifier for the user providing the testimonial",
+      "course_id": "Identifier for the associated course",
+      "topic_id": "Identifier for the associated topic",
+      "is_visible": "Visibility status of the testimonial",
+      "rating": "Rating given by the user",
+      "review_order": "Order of the review in the list",
+      "occupation": "User's occupation",
+      "testimonial": "Content of the testimonial",
+      "video_testimonial": "URL for video testimonial, if available",
+      "testimonial_date": "Date when the testimonial was given",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "testimonial",
+      "review",
+      "feedback"
+    ]
+  },
+  "tool": {
+    "description": "Contains information about various tools and their features.",
+    "column_descriptions": {
+      "tool_id": "Unique tool identifier",
+      "name": "Name of the tool",
+      "keyword": "Keywords associated with the tool",
+      "definition": "Definition of the tool",
+      "reviews": "User reviews for the tool",
+      "statistics": "Statistical data related to the tool",
+      "features": "Features offered by the tool",
+      "pros_and_cons": "Advantages and disadvantages of the tool",
+      "pricing": "Pricing information for the tool",
+      "rating": "Overall rating of the tool",
+      "faqs": "Frequently asked questions about the tool",
+      "links": "Relevant links related to the tool",
+      "use_cases": "Use cases for the tool",
+      "when_not_to_use": "Situations when the tool should not be used",
+      "type_of_data_processing": "Type of data processing supported by the tool",
+      "data_ingestion": "Data ingestion capabilities of the tool",
+      "data_transformation": "Data transformation capabilities of the tool",
+      "ml_support": "Machine learning support offered by the tool",
+      "query_language": "Query language used by the tool",
+      "deployment_model": "Deployment model of the tool",
+      "integration": "Integration capabilities with other systems",
+      "security": "Security features of the tool",
+      "pricing_model": "Pricing model of the tool",
+      "scalability": "Scalability of the tool",
+      "performance": "Performance metrics of the tool",
+      "availability": "Availability of the tool",
+      "reliability": "Reliability of the tool",
+      "monitoring": "Monitoring capabilities of the tool",
+      "dev_tools": "Development tools associated with the tool",
+      "is_active": "Active status of the tool",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "tool",
+      "features",
+      "technology"
+    ]
+  },
+  "tool_compare_with": {
+    "description": "Stores comparisons between different tools.",
+    "column_descriptions": {
+      "tool_compare_with_id": "Unique comparison identifier",
+      "tool_id": "Identifier for the primary tool",
+      "compare_tool_id": "Identifier for the tool being compared",
+      "is_active": "Active status of the comparison",
+      "date_created": "Timestamp when the record was created",
+      "last_modified": "Timestamp when the record was last modified"
+    },
+    "semantic_tags": [
+      "comparison",
+      "tools",
+      "evaluation"
+    ]
+  },
+  "tools_organization": {
+    "description": "Associates tools with organizations and tracks their active status.",
+    "column_descriptions": {
+      "tool_organization_id": "Unique identifier for the tool-organization relationship",
+      "tool_id": "Identifier for the tool",
+      "organization_id": "Identifier for the organization",
+      "is_active": "Indicates if the association is currently active",
+      "date_created": "Timestamp of when the record was created",
+      "last_modified": "Timestamp of the last update to the record"
+    },
+    "semantic_tags": [
+      "tools",
+      "organization",
+      "association"
+    ]
+  },
+  "topic_supplement": {
+    "description": "Links topics with their supplementary materials and their order.",
+    "column_descriptions": {
+      "topic_supplement_id": "Unique identifier for the topic-supplement relationship",
+      "topic_id": "Identifier for the topic",
+      "supplement_id": "Identifier for the supplement",
+      "order": "Order of the supplement in relation to the topic",
+      "date_created": "Timestamp of when the record was created",
+      "last_modified": "Timestamp of the last update to the record"
+    },
+    "semantic_tags": [
+      "topic",
+      "supplement",
+      "material"
+    ]
+  },
+  "topic_user": {
+    "description": "Tracks user engagement with specific topics, including anonymous interactions.",
+    "column_descriptions": {
+      "topic_user_id": "Unique identifier for the topic-user relationship",
+      "topic_id": "Identifier for the topic",
+      "user_id": "Identifier for the user",
+      "anonymous_id": "Identifier for anonymous user interactions",
+      "date_created": "Timestamp of when the record was created",
+      "date_stopped": "Timestamp of when the user engagement ended"
+    },
+    "semantic_tags": [
+      "topic",
+      "user",
+      "engagement"
+    ]
+  },
+  "topic_video": {
+    "description": "Associates videos with topics and indicates if they are sample videos.",
+    "column_descriptions": {
+      "topic_video_id": "Unique identifier for the topic-video relationship",
+      "topic_id": "Identifier for the topic",
+      "video_id": "Identifier for the video",
+      "is_sample": "Indicates if the video is a sample",
+      "date_created": "Timestamp of when the record was created",
+      "last_modified": "Timestamp of the last update to the record"
+    },
+    "semantic_tags": [
+      "topic",
+      "video",
+      "media"
+    ]
+  },
+  "tutorial": {
+    "description": "Stores information about tutorials, including their metadata and content.",
+    "column_descriptions": {
+      "tutorial_id": "Unique identifier for the tutorial",
+      "course_id": "Identifier for the associated course",
+      "title": "Full title of the tutorial",
+      "short_title": "Shortened version of the tutorial title",
+      "type": "Type of tutorial (e.g., video, article)",
+      "keyword": "Main keyword associated with the tutorial",
+      "meta_title": "SEO title for the tutorial",
+      "meta_description": "SEO description for the tutorial",
+      "meta_keywords": "SEO keywords for the tutorial",
+      "preview": "Preview content for the tutorial",
+      "article": "Full article content of the tutorial",
+      "date_created": "Timestamp of when the record was created",
+      "last_modified": "Timestamp of the last update to the record"
+    },
+    "semantic_tags": [
+      "tutorial",
+      "education",
+      "content"
+    ]
+  },
+  "tutorial_video": {
+    "description": "Links videos to tutorials and stores their metadata.",
+    "column_descriptions": {
+      "tutorial_video_id": "Unique identifier for the tutorial-video relationship",
+      "tutorial_id": "Identifier for the associated tutorial",
+      "video_title": "Title of the video",
+      "video_url": "URL of the video",
+      "date_created": "Timestamp of when the record was created",
+      "last_modified": "Timestamp of the last update to the record"
+    },
+    "semantic_tags": [
+      "tutorial",
+      "video",
+      "media"
+    ]
+  },
+  "untitled_table_154": {
+    "description": "A placeholder table with minimal structure.",
+    "column_descriptions": {
+      "id": "Unique identifier for the record"
+    },
+    "semantic_tags": [
+      "placeholder",
+      "generic",
+      "data"
+    ]
+  },
+  "user_active_project": {
+    "description": "Tracks active projects associated with users.",
+    "column_descriptions": {
+      "user_active_project_id": "Unique identifier for the user-active project relationship",
+      "user_id": "Identifier for the user",
+      "project_id": "Identifier for the project",
+      "is_active": "Indicates if the project is currently active for the user",
+      "date_created": "Timestamp of when the record was created",
+      "last_modified": "Timestamp of the last update to the record"
+    },
+    "semantic_tags": [
+      "user",
+      "project",
+      "activity"
+    ]
+  },
+  "user_badge": {
+    "description": "Records badges earned by users.",
+    "column_descriptions": {
+      "user_badge_id": "Unique identifier for the user-badge relationship",
+      "badge_id": "Identifier for the badge",
+      "user_id": "Identifier for the user",
+      "date_created": "Timestamp of when the record was created",
+      "last_modified": "Timestamp of the last update to the record"
+    },
+    "semantic_tags": [
+      "user",
+      "badge",
+      "achievement"
+    ]
+  },
+  "user_favourite_project": {
+    "description": "Tracks projects marked as favorites by users.",
+    "column_descriptions": {
+      "user_favourite_project_id": "Unique identifier for the user-favorite project relationship",
+      "user_id": "Identifier for the user",
+      "project_id": "Identifier for the project",
+      "is_active": "Indicates if the favorite status is currently active",
+      "date_created": "Timestamp of when the record was created",
+      "last_modified": "Timestamp of the last update to the record"
+    },
+    "semantic_tags": [
+      "user",
+      "project",
+      "favorites"
+    ]
+  },
+  "question_attachment": {
+    "description": "Stores attachments related to course questions.",
+    "column_descriptions": {
+      "question_attachment_id": "Unique identifier for the attachment",
+      "aws_url": "URL of the attachment stored in AWS",
+      "file_type": "Type of the file (e.g., PDF, image)",
+      "course_question_id": "Identifier for the associated course question",
+      "date_created": "Timestamp when the attachment was created",
+      "date_modified": "Timestamp when the attachment was last modified"
+    },
+    "semantic_tags": [
+      "attachment",
+      "course",
+      "question"
+    ]
+  },
+  "questions_new": {
+    "description": "Holds new questions related to courses.",
+    "column_descriptions": {
+      "course_question_id": "Unique identifier for the course question",
+      "course_id": "Identifier for the related course",
+      "user_id": "Identifier for the user who asked the question",
+      "faculty_id": "Identifier for the faculty member associated with the question",
+      "question_title": "Title of the question",
+      "question": "The content of the question",
+      "date_created": "Timestamp when the question was created",
+      "last_modified": "Timestamp when the question was last modified"
+    },
+    "semantic_tags": [
+      "question",
+      "course",
+      "user"
+    ]
+  },
+  "razorpay": {
+    "description": "Manages subscription details and payment statuses.",
+    "column_descriptions": {
+      "razorpay_id": "Unique identifier for the Razorpay entry",
+      "subscription_id": "Identifier for the subscription",
+      "plan_id": "Identifier for the subscription plan",
+      "status": "Current status of the subscription",
+      "date_created": "Timestamp when the entry was created",
+      "last_modified": "Timestamp when the entry was last modified"
+    },
+    "semantic_tags": [
+      "payment",
+      "subscription",
+      "transaction"
+    ]
+  },
+  "redirect": {
+    "description": "Stores information about URL redirects for entities.",
+    "column_descriptions": {
+      "redirect_id": "Unique identifier for the redirect",
+      "entity_id": "Identifier for the entity being redirected",
+      "redirect_url": "The URL to which the entity is redirected",
+      "type": "Type of redirect (e.g., permanent, temporary)",
+      "date_created": "Timestamp when the redirect was created",
+      "last_modified": "Timestamp when the redirect was last modified"
+    },
+    "semantic_tags": [
+      "redirect",
+      "URL",
+      "entity"
+    ]
+  },
+  "referral": {
+    "description": "Tracks referral programs and associated cashback.",
+    "column_descriptions": {
+      "referral_id": "Unique identifier for the referral",
+      "course_id": "Identifier for the related course",
+      "short_name": "Short name for the referral program",
+      "cashback": "Amount of cashback offered for the referral",
+      "date_created": "Timestamp when the referral was created",
+      "last_modified": "Timestamp when the referral was last modified"
+    },
+    "semantic_tags": [
+      "referral",
+      "cashback",
+      "course"
+    ]
+  },
+  "referral_emails": {
+    "description": "Stores email addresses associated with referral programs.",
+    "column_descriptions": {
+      "referral_email_id": "Unique identifier for the referral email",
+      "user_id": "Identifier for the user associated with the email",
+      "email": "Email address for the referral",
+      "date_created": "Timestamp when the email entry was created",
+      "last_modified": "Timestamp when the email entry was last modified"
+    },
+    "semantic_tags": [
+      "referral",
+      "email",
+      "user"
+    ]
+  },
+  "resource": {
+    "description": "Contains resources related to courses and their metadata.",
+    "column_descriptions": {
+      "resource_id": "Unique identifier for the resource",
+      "title": "Title of the resource",
+      "keyword": "Primary keyword associated with the resource",
+      "meta_keyword": "Meta keyword for SEO purposes",
+      "meta_title": "Meta title for SEO purposes",
+      "meta_description": "Meta description for SEO purposes",
+      "description": "Detailed description of the resource",
+      "image_url": "URL of the resource's image",
+      "resource_url": "URL where the resource can be accessed",
+      "is_featured": "Indicates if the resource is featured",
+      "is_active": "Indicates if the resource is currently active",
+      "date_created": "Timestamp when the resource was created",
+      "last_modified": "Timestamp when the resource was last modified"
+    },
+    "semantic_tags": [
+      "resource",
+      "course",
+      "metadata"
+    ]
+  },
+  "role": {
+    "description": "Defines various user roles within the system.",
+    "column_descriptions": {
+      "role_id": "Unique identifier for the role",
+      "role_name": "Name of the role",
+      "date_created": "Timestamp when the role was created",
+      "last_modified": "Timestamp when the role was last modified"
+    },
+    "semantic_tags": [
+      "role",
+      "user",
+      "permissions"
+    ]
+  },
+  "search_query": {
+    "description": "Stores user search queries and their results.",
+    "column_descriptions": {
+      "search_query_id": "Unique identifier for the search query",
+      "user_id": "Identifier for the user who made the search",
+      "project_id": "Identifier for the project related to the search",
+      "search_query": "The actual search query text",
+      "search_result_count": "Number of results returned for the search",
+      "source": "Source of the search query",
+      "date_created": "Timestamp when the search query was created",
+      "last_modified": "Timestamp when the search query was last modified"
+    },
+    "semantic_tags": [
+      "search",
+      "query",
+      "user"
+    ]
+  },
+  "social_login_provider": {
+    "description": "Stores information about social login providers.",
+    "column_descriptions": {
+      "social_login_provider_id": "Unique identifier for the provider",
+      "name": "Name of the social login provider",
+      "date_created": "Timestamp when the provider was created",
+      "last_modified": "Timestamp when the provider was last modified"
+    },
+    "semantic_tags": [
+      "social",
+      "login",
+      "provider"
+    ]
+  },
+  "user_lab": {
+    "description": "Manages user access to laboratory projects and their associated details.",
+    "column_descriptions": {
+      "user_lab_id": "Unique identifier for the user lab entry",
+      "project_lab_id": "Identifier for the associated project lab",
+      "user_id": "Identifier for the user",
+      "subscription_id": "Identifier for the user's subscription",
+      "action": "Action taken by the user in the lab",
+      "status": "Current status of the user lab entry",
+      "link": "Link to the lab resources",
+      "admin_link": "Link for admin access to the lab",
+      "lab_user_name": "Username for lab access",
+      "lab_password": "Password for lab access",
+      "expired_on": "Expiration date of the lab access",
+      "first_start_time": "Timestamp of the first lab access",
+      "total_duration": "Total duration of lab usage",
+      "date_created": "Timestamp when the entry was created",
+      "last_modified": "Timestamp when the entry was last modified"
+    },
+    "semantic_tags": [
+      "user",
+      "lab",
+      "access",
+      "project",
+      "subscription"
+    ]
+  },
+  "user_lab_access": {
+    "description": "Tracks user access status to lab resources.",
+    "column_descriptions": {
+      "user_lab_access_id": "Unique identifier for the user lab access entry",
+      "user_id": "Identifier for the user",
+      "is_active": "Indicates if the access is currently active",
+      "date_created": "Timestamp when the access entry was created",
+      "last_modified": "Timestamp when the access entry was last modified"
+    },
+    "semantic_tags": [
+      "access",
+      "user",
+      "status",
+      "lab"
+    ]
+  },
+  "user_lab_usage": {
+    "description": "Records user session details and usage statistics for lab resources.",
+    "column_descriptions": {
+      "user_lab_usage_id": "Unique identifier for the user lab usage entry",
+      "user_lab_id": "Identifier for the associated user lab entry",
+      "last_start_time": "Timestamp of the last session start",
+      "last_stop_time": "Timestamp of the last session stop",
+      "active_duration": "Duration of the last active session",
+      "session_duration": "Total duration of the session",
+      "date_created": "Timestamp when the usage entry was created",
+      "last_modified": "Timestamp when the usage entry was last modified"
+    },
+    "semantic_tags": [
+      "usage",
+      "session",
+      "lab",
+      "statistics"
+    ]
+  },
+  "user_login": {
+    "description": "Logs user login attempts and associated metadata.",
+    "column_descriptions": {
+      "user_login_id": "Unique identifier for the user login entry",
+      "user_id": "Identifier for the user",
+      "ip_address": "IP address from which the user logged in",
+      "user_agent": "User agent string of the browser or app used",
+      "social_login_provider_id": "Identifier for the social login provider, if applicable",
+      "date_created": "Timestamp when the login entry was created",
+      "last_modified": "Timestamp when the login entry was last modified"
+    },
+    "semantic_tags": [
+      "login",
+      "user",
+      "security",
+      "metadata"
+    ]
+  },
+  "user_notes": {
+    "description": "Stores notes created by users related to specific projects.",
+    "column_descriptions": {
+      "note_id": "Unique identifier for the note",
+      "user_id": "Identifier for the user who created the note",
+      "project_id": "Identifier for the associated project",
+      "project_date_id": "Identifier for the specific project date",
+      "note_timing": "Timing of the note creation",
+      "user_note": "Content of the user's note",
+      "is_active": "Indicates if the note is currently active",
+      "date_created": "Timestamp when the note was created",
+      "last_modified": "Timestamp when the note was last modified"
+    },
+    "semantic_tags": [
+      "notes",
+      "user",
+      "project",
+      "documentation"
+    ]
+  },
+  "user_picture": {
+    "description": "Stores user profile pictures and associated metadata.",
+    "column_descriptions": {
+      "user_picture_id": "Unique identifier for the user picture entry",
+      "user_id": "Identifier for the user",
+      "picture_1": "First profile picture",
+      "picture_2": "Second profile picture, if applicable",
+      "aws_url": "URL of the pictures stored in AWS",
+      "date_created": "Timestamp when the picture entry was created",
+      "last_modified": "Timestamp when the picture entry was last modified"
+    },
+    "semantic_tags": [
+      "pictures",
+      "user",
+      "profile",
+      "media"
+    ]
+  },
+  "user_referral": {
+    "description": "Tracks user referrals and their statuses.",
+    "column_descriptions": {
+      "user_referral_id": "Unique identifier for the user referral entry",
+      "user_id": "Identifier for the user making the referral",
+      "referred_user_id": "Identifier for the referred user",
+      "email": "Email of the referred user",
+      "status": "Current status of the referral",
+      "hackerday_enroll_id": "Identifier for enrollment in HackerDay, if applicable",
+      "date_created": "Timestamp when the referral entry was created",
+      "last_modified": "Timestamp when the referral entry was last modified"
+    },
+    "semantic_tags": [
+      "referral",
+      "user",
+      "network",
+      "tracking"
+    ]
+  },
+  "user_social_identity": {
+    "description": "Manages user social media identities for login purposes.",
+    "column_descriptions": {
+      "user_social_identity_id": "Unique identifier for the user social identity entry",
+      "user_id": "Identifier for the user",
+      "social_login_provider_id": "Identifier for the social login provider",
+      "identifier": "Unique identifier for the user on the social platform",
+      "email": "Email associated with the social identity",
+      "is_active": "Indicates if the social identity is currently active",
+      "date_created": "Timestamp when the social identity entry was created",
+      "last_modified": "Timestamp when the social identity entry was last modified"
+    },
+    "semantic_tags": [
+      "social",
+      "identity",
+      "user",
+      "login"
+    ]
+  },
+  "vote_answer": {
+    "description": "Records user votes on specific course answers.",
+    "column_descriptions": {
+      "vote_answer_id": "Unique identifier for the vote on an answer",
+      "course_answer_id": "Identifier for the answer being voted on",
+      "user_id": "Identifier for the user casting the vote",
+      "vote": "Value of the vote (e.g., upvote or downvote)",
+      "date_created": "Timestamp when the vote entry was created",
+      "last_modified": "Timestamp when the vote entry was last modified"
+    },
+    "semantic_tags": [
+      "vote",
+      "answer",
+      "user",
+      "feedback"
+    ]
+  },
+  "vote_question": {
+    "description": "Records user votes on specific course questions.",
+    "column_descriptions": {
+      "vote_question_id": "Unique identifier for the vote on a question",
+      "course_question_id": "Identifier for the question being voted on",
+      "user_id": "Identifier for the user casting the vote",
+      "vote": "Value of the vote (e.g., upvote or downvote)",
+      "favorite": "Indicates if the question is marked as favorite",
+      "date_created": "Timestamp when the vote entry was created",
+      "last_modified": "Timestamp when the vote entry was last modified"
+    },
+    "semantic_tags": [
+      "vote",
+      "question",
+      "user",
+      "feedback"
+    ]
+  }
+}
