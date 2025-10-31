@@ -52,82 +52,104 @@ class DatabaseSchemaManager:
         try:
             response = await aclient.embeddings.create(
                 input=texts,
-                model="text-embedding-3-small"
+                model="text-embedding-3-large"
             )
             return [item.embedding for item in response.data]
         except Exception as e:
             logger.error(f"Error generating embeddings: {e}")
             raise
 
-    async def auto_summarize_tables_batch_async(self, tables: List[Dict[str, Any]], db_type: str) -> Dict[str, Any]:
+    async def auto_summarize_tables_batch_async(self, tables: List[Dict[str, Any]], db_type: str = "unknown") -> Dict[str, Any]:
         """
-        Summarize multiple tables in one GPT call asynchronously.
-        Returns a dict {table_name: summary_dict}
+        Automatically summarize multiple tables with richer context and guidance.
+        Returns a dict {table_name: summary_dict}.
         """
-        # Filter out tables already in cache
-        tables_to_summarize = [t for t in tables if t['table_name'] not in self.summary_cache]
-        if not tables_to_summarize:
-            return {}
+        summaries_dict = {}
 
-        table_descriptions = "\n\n".join([
-            f"Table: {t['table_name']}\nColumns: {', '.join(t['columns'])}"
-            for t in tables_to_summarize
-        ])
+        for table in tables:
+            table_name = table["table_name"]
+            if table_name in self.summary_cache:
+                summaries_dict[table_name] = self.summary_cache[table_name]
+                continue
 
-        prompt = f"""
-        You are an expert database analyst.
-        You will receive several {db_type} tables (table name and columns).
-        For each table, return a short JSON object describing:
-        - "description": one concise sentence describing the table purpose
-        - "column_descriptions": a mapping column_name -> short meaning
-        - "semantic_tags": 3–5 keywords about the table's purpose
+            # Build structured prompt
+            columns = ", ".join(table.get("columns", []))
+            primary_keys = ", ".join(table.get("primary_keys", [])) if table.get("primary_keys") else "None"
+            foreign_keys = []
+            if table.get("foreign_keys"):
+                foreign_keys = [
+                    f"{fk['column']} → {fk['references_table']}.{fk['references_column']}"
+                    for fk in table["foreign_keys"]
+                ]
 
-        Example JSON:
-        {{
-        "users": {{
-            "description": "Stores information about registered users.",
-            "column_descriptions": {{
-            "user_id": "Unique user identifier",
-            "email": "User's email address"
-            }},
-            "semantic_tags": ["user", "account", "email"]
-        }},
-        "orders": {{
-            "description": "Tracks customer orders and their status.",
-            "column_descriptions": {{
-            "order_id": "Unique order identifier",
-            "status": "Current order state"
-            }},
-            "semantic_tags": ["order", "transaction", "ecommerce"]
-        }}
-        }}
+            prompt = f"""
+            You are an expert data analyst and database architect.
+            Summarize the purpose and structure of the {db_type} SQL table named '{table_name}'.
 
-        Respond ONLY with valid JSON. Do not include explanations, markdown, or prose.
+            Columns: {columns}
+            Primary Keys: {primary_keys}
+            Foreign Keys: {', '.join(foreign_keys) if foreign_keys else 'None'}
 
-        Tables:
-        {table_descriptions}
-        """
+            Output a valid JSON object with the following keys:
 
-        try:
-            response = await aclient.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.3
-            )
-            raw = response.choices[0].message.content.strip()
-            summaries = json.loads(raw)
-        except Exception as e:
-            logger.warning(f"⚠️ Batch summarization failed: {e}")
-            return {}
+            - "table_name": name of the table
+            - "description": short plain-English description of what data this table stores
+            - "column_descriptions": a dictionary mapping each column name to its meaning
+            - "primary_keys": list of primary key columns
+            - "foreign_keys": list of relationships like "column → referenced_table.referenced_column"
+            - "semantic_tags": list of 5–10 keywords that capture the business meaning of this table
+            - "when_to_use": one sentence explaining when to use this table for analysis or queries
+            - "usage_examples": 1–3 short example natural-language questions this table could help answer
 
-        # Update cache and persist
-        for name, summary in summaries.items():
-            self.summary_cache[name] = summary
+            Example output:
+            {{
+              "table_name": "user_profile",
+              "description": "Stores basic information about users including names and signup dates.",
+              "column_descriptions": {{
+                "user_id": "Primary key for user",
+                "date_created": "Signup date"
+              }},
+              "primary_keys": ["user_id"],
+              "foreign_keys": [],
+              "semantic_tags": ["user", "profile", "signup", "account"],
+              "when_to_use": "Use this table when you need user information or signup data.",
+              "usage_examples": [
+                "How many users signed up last month?",
+                "List users who updated their profile recently."
+              ]
+            }}
+            """
 
+            try:
+                response = await aclient.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": "You summarize database tables precisely in JSON."},
+                        {"role": "user", "content": prompt},
+                    ],
+                    temperature=0.1
+                )
+
+                raw_content = response.choices[0].message.content.strip()
+                raw_content = raw_content.strip("```json").strip("```").strip()
+
+                summary = json.loads(raw_content)
+                summaries_dict[table_name] = summary
+                self.summary_cache[table_name] = summary
+
+            except Exception as e:
+                logger.error(f"Error summarizing table '{table_name}': {e}")
+                summaries_dict[table_name] = {
+                    "table_name": table_name,
+                    "description": "Error generating summary",
+                    "error": str(e)
+                }
+
+        # Save updated cache
         with open(self.summary_cache_path, "w") as f:
             json.dump(self.summary_cache, f, indent=2)
 
-        return summaries
+        return summaries_dict
     
     async def process_table_batches_parallel(self, schema_data: List[Dict[str, Any]], db_type: str = "unknown"):
         """Process table batches in parallel with 5 concurrent batches of 10 tables"""
@@ -165,32 +187,44 @@ class DatabaseSchemaManager:
                     col_descs = summary.get("column_descriptions", {})
                     tags = summary.get("semantic_tags", [])
 
-                    # Build enhanced document with relationship context
+                    # 🧠 Build enhanced semantic document for embedding
                     doc_parts = [f"Table: {table_name}. {desc}"]
-                    
+
                     # Add columns with descriptions
-                    column_text = "Columns: "
-                    for c in columns:
-                        meaning = col_descs.get(c, "")
-                        column_text += f"{c} ({meaning}), "
-                    doc_parts.append(column_text.rstrip(', '))
-                    
-                    # Add primary keys if available
+                    if col_descs:
+                        col_lines = [f"{col}: {meaning}" for col, meaning in col_descs.items()]
+                        doc_parts.append("Columns:\n" + "\n".join(col_lines))
+                    else:
+                        doc_parts.append(f"Columns: {', '.join(columns)}")
+
+                    # Add primary keys
                     if item.get('primary_keys'):
-                        doc_parts.append(f"Primary keys: {', '.join(item['primary_keys'])}")
-                    
-                    # Add relationships if available
+                        doc_parts.append(f"Primary Keys: {', '.join(item['primary_keys'])}")
+
+                    # Add foreign key relationships
                     if item.get('foreign_keys'):
-                        rel_text = "Connects to: "
-                        relationships = []
-                        for fk in item['foreign_keys']:
-                            relationships.append(f"{fk['column']}→{fk['references_table']}")
-                        doc_parts.append(rel_text + ", ".join(relationships))
-                    
+                        relationships = [
+                            f"{fk['column']} → {fk['references_table']}.{fk['references_column']}"
+                            for fk in item['foreign_keys']
+                        ]
+                        doc_parts.append("Relationships:\n" + "\n".join(relationships))
+
+                    # Add semantic tags
                     if tags:
-                        doc_parts.append(f"Keywords: {', '.join(tags)}")
-                    
-                    doc_text = ". ".join(doc_parts)
+                        doc_parts.append(f"Semantic Keywords: {', '.join(tags)}")
+
+                    # ✅ Add new GPT-generated fields
+                    when_to_use = summary.get("when_to_use")
+                    if when_to_use:
+                        doc_parts.append(f"When to Use: {when_to_use}")
+
+                    usage_examples = summary.get("usage_examples", [])
+                    if usage_examples:
+                        doc_parts.append("Example Questions:\n" + "\n".join(f"- {q}" for q in usage_examples))
+
+                    # Combine all parts
+                    doc_text = "\n\n".join(doc_parts)
+
                     batch_docs.append(doc_text)
                     
                     batch_metas.append({
@@ -389,7 +423,7 @@ SQL Query:
 
     try:
         response = await aclient.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You are a SQL expert that understands database relationships and generates accurate JOIN queries."},
                 {"role": "user", "content": enhanced_prompt}
