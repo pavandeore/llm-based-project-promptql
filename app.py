@@ -15,6 +15,10 @@ import aiohttp
 import time
 from datetime import datetime, date
 
+import tempfile
+import shutil
+from pathlib import Path
+
 
 load_dotenv()
 
@@ -47,13 +51,32 @@ class DatabaseSchemaManager:
     """Manages database schema information and vector embeddings"""
     
     def __init__(self):
-        self.chroma_client = chromadb.PersistentClient(path="./chroma_db")
+        # ✅ Choose default persistent path
+        default_path = Path("./chroma_db").resolve()
+        os.makedirs(default_path, exist_ok=True)
+
+        # ✅ Check write permission (industry-safe pattern)
+        try:
+            test_file = default_path / ".write_test"
+            with open(test_file, "w") as f:
+                f.write("ok")
+            test_file.unlink()  # cleanup test file
+            chroma_path = str(default_path)
+        except (IOError, PermissionError):
+            # 🔒 Fallback to a guaranteed writable directory
+            fallback_path = Path(tempfile.gettempdir()) / "chroma_db"
+            os.makedirs(fallback_path, exist_ok=True)
+            chroma_path = str(fallback_path)
+            logger.warning(f"⚠️ Primary ChromaDB path not writable. Using fallback: {chroma_path}")
+
+        # ✅ Initialize persistent Chroma safely
+        self.chroma_client = chromadb.PersistentClient(path=chroma_path)
         self.collection = self.chroma_client.get_or_create_collection(
             name="database_schema",
             metadata={"description": "Database table and column information"}
         )
 
-        # 🧠 Caching summaries to avoid regenerating for 300+ tables
+        # ✅ Cache path setup
         self.summary_cache_path = "./schema_summary_cache.json"
         if os.path.exists(self.summary_cache_path):
             try:
@@ -167,6 +190,7 @@ class DatabaseSchemaManager:
                         {"role": "system", "content": "You summarize database tables precisely in JSON."},
                         {"role": "user", "content": prompt},
                     ],
+                    response_format={"type": "json_object"},
                     temperature=0.1
                 )
 
@@ -478,6 +502,20 @@ async def generate_sql_with_relationships_async(
         formatted_samples = json.dumps(sample_data, indent=2)
         sample_context = f"\nSample Rows (1 per relevant table):\n{formatted_samples}"
 
+    # 🧩 Load application logic if available
+    logic_context = ""
+    logic_path = "./application_logic.json"
+    if os.path.exists(logic_path):
+        try:
+            with open(logic_path, "r") as f:
+                logic_data = json.load(f)
+                logic_text = logic_data.get("logic", "").strip()
+                if logic_text:
+                    logic_context = f"\nApplication-Level Logic:\n{logic_text}\n"
+        except Exception as e:
+            logger.warning(f"⚠️ Could not load application logic: {e}")
+
+
     # 🧠 Enhanced prompt with semantic + structural context
     enhanced_prompt = f"""
 You are an expert SQL developer. Convert the following natural language request into an accurate SQL query.
@@ -491,17 +529,22 @@ Database Schema with Relationships:
 
 {sample_context}
 
+Application Level Logic:
+{logic_context}
+
 CRITICAL INSTRUCTIONS:
 1. Use the semantic meaning of each table/column (from summaries) to select correct tables.
 2. Use sample values to infer column value conventions (Y/N, true/false, etc.).
 3. Use JOINs only if necessary — single-table queries are preferred when possible.
-4. Use foreign key relationships as hints for joins (not mandatory).
-5. Generate syntactically correct SQL for {db_type}.
-6. Return **only the SQL query**, no commentary.
-7. Never invent tables or columns not in the schema.
-8. Include WHERE, GROUP BY, ORDER BY, and LIMIT clauses based on query intent.
-9. Use clear table aliases if multiple tables are joined.
-10. Respect conventions for status or completion flags ('Y', 'N', true/false, 1/0).
+5. Use case-insensitive matching (e.g., LOWER()).
+6. Prefer partial string matches (LIKE) when the exact value is unclear.
+7. Use foreign key relationships as hints for joins (not mandatory).
+8. Generate syntactically correct SQL for {db_type}.
+9. Return **only the SQL query**, no commentary.
+10. Never invent tables or columns not in the schema.
+11. Include WHERE, GROUP BY, ORDER BY, and LIMIT clauses based on query intent.
+12. Use clear table aliases if multiple tables are joined.
+13. Respect conventions for status or completion flags ('Y', 'N', true/false, 1/0).
 
 Natural language query: {natural_language_query}
 
@@ -564,6 +607,81 @@ def quote_identifiers_if_postgres(sql_query: str, db_type: str) -> str:
         logger.error(f"Error quoting identifiers for Postgres: {e}", exc_info=True)
         # On error, return the original query unmodified to avoid breaking execution
         return sql_query
+    
+async def auto_fix_and_execute_query(
+    aclient,
+    engine,
+    sql_query: str,
+    natural_language_query: str,
+    schema_info: str,
+    db_type: str,
+) -> (list, list, str):
+    """
+    Execute SQL safely — if it fails, automatically re-generate a corrected query using GPT.
+    Returns (rows, columns, final_sql_query)
+    """
+    try:
+        with engine.connect() as conn:
+            try:
+                # ✅ First attempt
+                result = conn.execute(text(sql_query))
+                rows = result.fetchall()
+                columns = result.keys()
+                return rows, columns, sql_query
+
+            except SQLAlchemyError as e:
+                error_message = str(e.__cause__ or e)
+                logger.warning(f"⚠️ Query failed: {error_message}")
+
+                # 🧠 Build a repair prompt for GPT
+                repair_prompt = f"""
+The following SQL query failed to execute. Correct it based on the schema and error message.
+
+Natural language query: {natural_language_query}
+
+Failed SQL:
+{sql_query}
+
+Database error:
+{error_message}
+
+Schema information:
+{schema_info}
+
+Instructions:
+- Output only the corrected SQL query (no explanation).
+- Only use existing tables and columns from the schema.
+- Simplify joins if necessary.
+- Ensure valid syntax for {db_type}.
+"""
+
+                logger.info("🔄 Attempting to auto-fix SQL via GPT...")
+                logger.info(f"Repair Prompt:\n{repair_prompt}")
+
+                response = await aclient.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": "You are an expert SQL troubleshooter and repair assistant."},
+                        {"role": "user", "content": repair_prompt},
+                    ],
+                    temperature=0.1,
+                    max_tokens=800
+                )
+
+                fixed_sql = response.choices[0].message.content.strip()
+                fixed_sql = re.sub(r"```sql\s*|\s*```", "", fixed_sql).strip()
+
+                logger.info(f"🔧 Regenerated SQL:\n{fixed_sql}")
+
+                # Try executing the corrected SQL
+                result = conn.execute(text(fixed_sql))
+                rows = result.fetchall()
+                columns = result.keys()
+                return rows, columns, fixed_sql
+
+    except SQLAlchemyError as e:
+        logger.error(f"❌ Query failed even after auto-fix: {e}")
+        raise e
 
 def get_db_url(db_type: str, db_host: str, db_port: str, db_name: str, db_user: str, db_password: str) -> str:
     """Generate the appropriate database URL based on the database type"""
@@ -688,17 +806,24 @@ def query():
             logger.info(f"Generated SQL: {sql_query}")
             
             # Execute the SQL query
-            with engine.connect() as conn:
-                result = conn.execute(text(sql_query))
-                rows = result.fetchall()
-                columns = result.keys()
-                
-            return render_template('results.html', 
-                                 query=natural_language_query,
-                                 sql_query=sql_query,
-                                 columns=columns,
-                                 rows=rows,
-                                 schema_info=schema_info)
+            rows, columns, final_sql = run_async(auto_fix_and_execute_query(
+                aclient,
+                engine,
+                sql_query,
+                natural_language_query,
+                schema_info,
+                session['db_type']
+            ))
+
+            return render_template(
+                'results.html',
+                query=natural_language_query,
+                sql_query=final_sql,
+                columns=columns,
+                rows=rows,
+                schema_info=schema_info
+            )
+
             
         except SQLAlchemyError as e:
             logger.error(f"Database error: {e}")
@@ -756,6 +881,43 @@ def api_generate_sql():
     except Exception as e:
         logger.error(f"API error: {e}")
         return jsonify({'error': str(e)}), 500
+    
+@app.route('/api/save-logic', methods=['POST'])
+def save_application_logic():
+    """Save application-level logic text to local JSON file."""
+    try:
+        data = request.get_json()
+        logic_text = data.get("logic", "").strip()
+
+        if not logic_text:
+            return jsonify({"error": "No logic text provided"}), 400
+
+        logic_path = "./application_logic.json"
+
+        # Save to file
+        with open(logic_path, "w") as f:
+            json.dump({"logic": logic_text, "updated": datetime.now().isoformat()}, f, indent=2)
+
+        logger.info("✅ Application logic saved successfully.")
+        return jsonify({"status": "success"})
+
+    except Exception as e:
+        logger.error(f"Error saving application logic: {e}")
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/get-logic', methods=['GET'])
+def get_application_logic():
+    """Return saved logic for prefill."""
+    try:
+        path = "./application_logic.json"
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                data = json.load(f)
+            return jsonify(data)
+        else:
+            return jsonify({"logic": ""})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/admin/refresh-schema', methods=['POST', 'GET'])
 def refresh_schema():
