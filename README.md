@@ -32,17 +32,35 @@ Vector Embedding version done
 
 ---
 
-You connect to a database (Postgres/MySQL/SQLite)
+Database Connection (PostgreSQL / MySQL / SQLite)
 
-It extracts and stores schema info (tables, columns, types)
+- The user enters connection credentials via the web form.
+- The app tests the connection using SQLAlchemy.
 
-It stores that info in a vector database (ChromaDB) using OpenAI embeddings
+Schema Extraction & Enrichment
 
-When a user types a question in plain English, it:
+- It automatically extracts all tables, columns, data types, and relationships (foreign keys).
+- Each table is summarized with GPT (description, column meanings, usage examples, semantic tags, etc.).
+- These summaries are cached locally (schema_summary_cache.json) for reuse.
 
-Finds relevant tables using vector search
+Vector Embedding & Storage (ChromaDB)
 
-Asks OpenAI to generate the SQL query
+- The app embeds each table’s semantic summary using OpenAI’s text-embedding-3-large model.
+- Embeddings (vector representations) are stored in a local ChromaDB collection for fast semantic search.
 
-Executes it and displays results in the browser.
+Natural Language Query → SQL Conversion
+When a user types a question in plain English:
 
+- The query is embedded and matched against ChromaDB to find the most relevant tables.
+- Sample rows are fetched from those tables to give GPT example data.
+- A GPT model (gpt-4o) is prompted with the schema, summaries, and samples to generate an accurate SQL query.
+
+SQL Execution & Result Display
+
+- The generated SQL is executed safely via SQLAlchemy.
+- The results (columns + rows) are rendered in the browser along with the generated SQL query.
+
+Admin Features
+
+- /admin/refresh-schema allows rebuilding all embeddings and summaries from scratch if the database schema changes.
+- Errors and performance metrics are logged to app.log.

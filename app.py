@@ -13,6 +13,8 @@ from logging.handlers import RotatingFileHandler
 import asyncio
 import aiohttp
 import time
+from datetime import datetime, date
+
 
 load_dotenv()
 
@@ -25,6 +27,21 @@ logger = logging.getLogger(__name__)
 
 # Configure Async OpenAI
 aclient = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+def serialize_value(value):
+    """Convert complex SQLAlchemy values into JSON-serializable Python values."""
+    import datetime, decimal
+
+    if isinstance(value, (datetime.date, datetime.datetime)):
+        return value.isoformat()
+    elif isinstance(value, decimal.Decimal):
+        return float(value)
+    elif isinstance(value, bytes):
+        return value.decode(errors="ignore")
+    elif value is None:
+        return None
+    else:
+        return value
 
 class DatabaseSchemaManager:
     """Manages database schema information and vector embeddings"""
@@ -46,6 +63,29 @@ class DatabaseSchemaManager:
                 self.summary_cache = {}
         else:
             self.summary_cache = {}
+
+    def serialize_value(value):
+        if isinstance(value, (datetime, date)):
+            return value.isoformat()
+        if isinstance(value, bytes):
+            return value.decode(errors="ignore")
+        return value
+
+    def fetch_sample_rows(self, engine, tables: List[str]) -> Dict[str, Dict[str, Any]]:
+        samples = {}
+        with engine.connect() as conn:
+            for table in tables:
+                try:
+                    result = conn.execute(
+                        quote_identifiers_if_postgres(text(f"SELECT * FROM {table} LIMIT 1"), engine.dialect.name)
+                    )
+                    row = result.fetchone()
+                    if row:
+                        samples[table] = {k: serialize_value(v) for k, v in row._mapping.items()}
+                except Exception as e:
+                    logger.warning(f"⚠️ Could not fetch sample row from table '{table}': {e}")
+                    samples[table] = {"error": str(e)}
+        return samples
     
     async def generate_embeddings_async(self, texts: List[str]) -> List[List[float]]:
         """Generate embeddings for schema texts asynchronously"""
@@ -130,6 +170,7 @@ class DatabaseSchemaManager:
                     temperature=0.1
                 )
 
+                # after getting response text
                 raw_content = response.choices[0].message.content.strip()
                 raw_content = raw_content.strip("```json").strip("```").strip()
 
@@ -393,50 +434,101 @@ class DatabaseManager:
         
         return schema_info
 
-async def generate_sql_with_relationships_async(natural_language_query: str, schema_info: str, db_type: str) -> Optional[str]:
-    """Generate SQL with understanding of table relationships asynchronously"""
-    
+async def generate_sql_with_relationships_async(
+    natural_language_query: str,
+    schema_info: str,
+    db_type: str,
+    sample_data: Optional[Dict[str, Dict[str, Any]]] = None,
+    relevant_tables: Optional[List[str]] = None
+) -> Optional[str]:
+    """Generate SQL with understanding of table relationships, sample data, and cached semantic summaries."""
+
+    # 🗂️ Load only summaries for relevant tables
+    summary_context = ""
+    schema_summary_path = "./schema_summary_cache.json"
+
+    if relevant_tables and os.path.exists(schema_summary_path):
+        try:
+            with open(schema_summary_path, "r") as f:
+                cache = json.load(f)
+
+            summaries = {t: cache.get(t) for t in relevant_tables if t in cache}
+
+            if summaries:
+                summary_context = "\n\nSchema Summaries for Relevant Tables:\n"
+                for t, summary in summaries.items():
+                    if not summary:
+                        continue
+                    desc = summary.get("description", "")
+                    cols = summary.get("column_descriptions", {})
+                    usage = summary.get("usage_examples", [])
+                    summary_context += f"\n📘 Table: {t}\nDescription: {desc}\nColumns:\n"
+                    for col, meaning in cols.items():
+                        summary_context += f"  - {col}: {meaning}\n"
+                    if usage:
+                        summary_context += "Example Questions:\n"
+                        for q in usage:
+                            summary_context += f"  - {q}\n"
+        except Exception as e:
+            logger.warning(f"⚠️ Could not load relevant summaries: {e}")
+
+    # 🧩 Build sample data context
+    sample_context = ""
+    if sample_data:
+        formatted_samples = json.dumps(sample_data, indent=2)
+        sample_context = f"\nSample Rows (1 per relevant table):\n{formatted_samples}"
+
+    # 🧠 Enhanced prompt with semantic + structural context
     enhanced_prompt = f"""
 You are an expert SQL developer. Convert the following natural language request into an accurate SQL query.
 
-Use the provided database schema (with relationships) to determine which tables and joins are needed.
+Use the provided database schema, schema summaries, and sample data to determine which tables, joins, and filters are needed.
 
 Database Schema with Relationships:
 {schema_info}
 
+{summary_context}
+
+{sample_context}
+
 CRITICAL INSTRUCTIONS:
-1. Carefully read the natural language request and determine which tables are relevant.
-2. Use JOINs **only if** the query logically requires combining data from multiple related tables.
-3. If the query can be satisfied from a single table, use only that table — no unnecessary JOINs.
-4. Use foreign key relationships as hints for possible joins (not mandatory unless relevant).
-5. Always generate syntactically correct SQL for {db_type}.
-6. Return **only the SQL query**, no explanations or commentary.
-7. Include all appropriate WHERE, GROUP BY, ORDER BY, or LIMIT clauses based on intent.
-8. Use clear table aliases if multiple tables are involved.
-9. Handle is_active or status-like columns using typical conventions (e.g., 'Y', 'N', 'active', 'inactive', true, false, 0, 1).
-10. Ensure column and table names match the schema exactly.
+1. Use the semantic meaning of each table/column (from summaries) to select correct tables.
+2. Use sample values to infer column value conventions (Y/N, true/false, etc.).
+3. Use JOINs only if necessary — single-table queries are preferred when possible.
+4. Use foreign key relationships as hints for joins (not mandatory).
+5. Generate syntactically correct SQL for {db_type}.
+6. Return **only the SQL query**, no commentary.
+7. Never invent tables or columns not in the schema.
+8. Include WHERE, GROUP BY, ORDER BY, and LIMIT clauses based on query intent.
+9. Use clear table aliases if multiple tables are joined.
+10. Respect conventions for status or completion flags ('Y', 'N', true/false, 1/0).
 
 Natural language query: {natural_language_query}
 
 SQL Query:
 """
+    
+    logger.info("=================================")
+    logger.info(f"Generated Prompt Query: {enhanced_prompt}")
 
     try:
         response = await aclient.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are a SQL expert that understands database relationships and generates accurate JOIN queries."},
-                {"role": "user", "content": enhanced_prompt}
+                {
+                    "role": "system",
+                    "content": "You are a SQL expert that understands schema semantics and relationships.",
+                },
+                {"role": "user", "content": enhanced_prompt},
             ],
             temperature=0.1,
-            max_tokens=1000
+            max_tokens=1000,
         )
-        
+
         sql_query = response.choices[0].message.content.strip()
-        sql_query = re.sub(r'```sql\s*|\s*```', '', sql_query).strip()
-        
+        sql_query = re.sub(r"```sql\s*|\s*```", "", sql_query).strip()
         return sql_query
-        
+
     except Exception as e:
         logger.error(f"Error generating SQL with relationships: {e}")
         return None
@@ -449,23 +541,29 @@ def quote_identifiers_if_postgres(sql_query: str, db_type: str) -> str:
     if db_type != 'postgresql' or not sql_query:
         return sql_query
 
-    # Simple pattern: match words used after FROM or JOIN or UPDATE etc.
-    keywords = ["FROM", "JOIN", "UPDATE", "INTO", "TABLE"]
-    for kw in keywords:
+    try:
+        # Simple pattern: match words used after FROM or JOIN or UPDATE etc.
+        keywords = ["FROM", "JOIN", "UPDATE", "INTO", "TABLE"]
+        for kw in keywords:
+            sql_query = re.sub(
+                rf"(?i)\b{kw}\s+(\w+)",
+                lambda m: f'{m.group(0).split()[0]} "{m.group(1)}"',
+                sql_query
+            )
+
+        # Quote columns in SELECT, WHERE, GROUP BY, ORDER BY
         sql_query = re.sub(
-            rf"(?i)\b{kw}\s+(\w+)",
-            lambda m: f'{m.group(0).split()[0]} "{m.group(1)}"',
+            r'(?i)(SELECT|WHERE|AND|OR|GROUP BY|ORDER BY|HAVING)\s+(\w+)\s*',
+            lambda m: f'{m.group(1)} "{m.group(2)}" ',
             sql_query
         )
 
-    # Quote columns in SELECT, WHERE, GROUP BY, ORDER BY
-    sql_query = re.sub(
-        r'(?i)(SELECT|WHERE|AND|OR|GROUP BY|ORDER BY|HAVING)\s+(\w+)\s*',
-        lambda m: f'{m.group(1)} "{m.group(2)}" ',
-        sql_query
-    )
+        return sql_query
 
-    return sql_query
+    except Exception as e:
+        logger.error(f"Error quoting identifiers for Postgres: {e}", exc_info=True)
+        # On error, return the original query unmodified to avoid breaking execution
+        return sql_query
 
 def get_db_url(db_type: str, db_host: str, db_port: str, db_name: str, db_user: str, db_password: str) -> str:
     """Generate the appropriate database URL based on the database type"""
@@ -560,15 +658,24 @@ def query():
             
             engine = create_engine(db_url)
             
-            # Get relevant schema information using vector embeddings ASYNC
+            # Get relevant schema info using embeddings
             db_manager = DatabaseManager()
             schema_info = run_async(db_manager.get_enhanced_schema_for_query_async(natural_language_query))
-            
-            # Generate SQL from natural language ASYNC
+
+            # Parse relevant table names from schema_info text (simple regex)
+            relevant_tables = re.findall(r'📊 Table: (\w+)', schema_info)
+
+            # Fetch 1 sample row per relevant table
+            engine = create_engine(db_url)
+            sample_data = db_manager.schema_manager.fetch_sample_rows(engine, relevant_tables)
+
+            # Generate SQL from natural language + schema + sample values
             sql_query = run_async(generate_sql_with_relationships_async(
-                natural_language_query, 
-                schema_info, 
-                session['db_type']
+                natural_language_query,
+                schema_info,
+                session['db_type'],
+                sample_data,
+                relevant_tables
             ))
             
             if not sql_query:
@@ -606,31 +713,46 @@ def query():
 
 @app.route('/api/generate-sql', methods=['POST'])
 def api_generate_sql():
-    """API endpoint for generating SQL"""
     try:
         data = request.get_json()
         natural_language_query = data.get('query')
         db_config = data.get('db_config')
-        
+
         if not natural_language_query or not db_config:
             return jsonify({'error': 'Missing query or db_config'}), 400
-        
-        # Get relevant schema ASYNC
+
+        # Build db_url from db_config
+        db_url = get_db_url(
+            db_config.get('db_type'),
+            db_config.get('db_host'),
+            db_config.get('db_port', '5432'),
+            db_config.get('db_name'),
+            db_config.get('db_user'),
+            db_config.get('db_password')
+        )
+
         db_manager = DatabaseManager()
-        schema_info = run_async(db_manager.get_enhanced_schema_for_query_async(natural_language_query))
-        
-        # Generate SQL ASYNC
+        schema_info = run_async(db_manager.get_enhanced_schema_for_query_async(
+            natural_language_query, n_results=5))
+
+        relevant_tables = re.findall(r'📊 Table: (\w+)', schema_info)
+
+        engine = create_engine(db_url)
+        sample_data = db_manager.schema_manager.fetch_sample_rows(engine, relevant_tables)
+
         sql_query = run_async(generate_sql_with_relationships_async(
             natural_language_query,
             schema_info,
-            db_config.get('db_type', 'postgresql')
+            db_config.get('db_type'),
+            sample_data,
+            relevant_tables
         ))
-        
+
         return jsonify({
             'sql_query': sql_query,
             'schema_used': schema_info
         })
-        
+
     except Exception as e:
         logger.error(f"API error: {e}")
         return jsonify({'error': str(e)}), 500
