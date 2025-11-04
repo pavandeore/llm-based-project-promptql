@@ -13,7 +13,9 @@ from logging.handlers import RotatingFileHandler
 import asyncio
 import aiohttp
 import time
-from datetime import datetime, date
+from datetime import date
+import decimal
+import datetime, decimal, uuid, numpy as np
 
 import tempfile
 import shutil
@@ -706,6 +708,127 @@ def run_async(coro):
     
     return loop.run_until_complete(coro)
 
+def universal_serialize(value):
+    """Safely convert any SQL/JSON value to a JSON-serializable form."""
+    try:
+        if value is None:
+            return None
+        if isinstance(value, (datetime.date, datetime.datetime)):
+            return value.isoformat()
+        if isinstance(value, decimal.Decimal):
+            return float(value)
+        if isinstance(value, (bytes, bytearray)):
+            return value.decode(errors="ignore")
+        if isinstance(value, uuid.UUID):
+            return str(value)
+        if isinstance(value, (np.int64, np.int32, np.float32, np.float64)):
+            return value.item()
+        return value
+    except Exception:
+        return str(value)
+
+
+def analyze_column_types(rows, columns):
+    """
+    Simple heuristic-based column type detection from rows.
+    Returns: dict {col_name: 'numeric' | 'categorical' | 'datetime' | 'text'}
+    """
+    import numbers
+    types = {}
+    if not rows:
+        return {c: 'unknown' for c in columns}
+
+    for col_index, col_name in enumerate(columns):
+        sample_vals = [r[col_index] for r in rows if r[col_index] is not None]
+        if not sample_vals:
+            types[col_name] = 'unknown'
+            continue
+
+        # Detect datetimes
+        if all(isinstance(v, (datetime.date, datetime.datetime)) for v in sample_vals[:10]):
+            types[col_name] = 'datetime'
+        # Detect numeric
+        elif all(isinstance(v, numbers.Number) or str(v).replace('.', '', 1).isdigit() for v in sample_vals[:10]):
+            types[col_name] = 'numeric'
+        # Detect categorical (few unique values)
+        elif len(set(sample_vals[:20])) < len(sample_vals[:20]) / 2:
+            types[col_name] = 'categorical'
+        else:
+            types[col_name] = 'text'
+    return types
+
+
+async def determine_smart_chart_type(rows, columns):
+    """
+    Decide best chart type using local heuristics first, fallback to OpenAI when ambiguous.
+    Returns: chart_type (string)
+    """
+    if not rows or not columns:
+        return "table"
+
+    # Analyze column types
+    col_types = analyze_column_types(rows, columns)
+    type_counts = {
+        "numeric": sum(1 for t in col_types.values() if t == "numeric"),
+        "categorical": sum(1 for t in col_types.values() if t == "categorical"),
+        "datetime": sum(1 for t in col_types.values() if t == "datetime"),
+    }
+
+    # 🧠 Local heuristic rules (fast path)
+    if type_counts["datetime"] >= 1 and type_counts["numeric"] >= 1:
+        return "line"
+    if type_counts["categorical"] >= 1 and type_counts["numeric"] >= 1:
+        return "bar"
+    if type_counts["numeric"] == 2:
+        return "scatter"
+    if type_counts["numeric"] > 2:
+        return "bubble"
+    if type_counts["categorical"] == 1 and len(rows) <= 10:
+        return "pie"
+
+    # 🧠 Fallback: ask OpenAI if uncertain
+    try:
+        sample_data = [
+            {col: universal_serialize(val) for col, val in zip(columns, r)}
+            for r in rows[:10]
+        ]
+
+        prompt = f"""
+        You are a data visualization expert.
+        Given the following SQL query result (JSON), choose the most appropriate visualization type.
+
+        Data (sample):
+        {json.dumps(sample_data, indent=2)}
+
+        Rules:
+        - If one categorical column and one numeric column → 'bar'
+        - If two numeric columns → 'scatter'
+        - If one date/time column and one numeric column → 'line'
+        - If one column with few unique values and one numeric → 'pie'
+        - If three numeric columns → 'bubble'
+        - If time-series with multiple metrics → 'area'
+        - Otherwise choose 'bar'
+
+        Return ONLY one word: the chart type.
+        """
+
+        response = await aclient.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a visualization expert."},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.1,
+            max_tokens=10,
+        )
+        chart_type = response.choices[0].message.content.strip().lower()
+        if chart_type not in ["bar", "line", "pie", "scatter", "area", "bubble", "donut", "heatmap"]:
+            chart_type = "bar"
+        return chart_type
+    except Exception as e:
+        logger.error(f"Error determining chart type: {e}")
+        return "bar"
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -756,13 +879,13 @@ def index():
 def query():
     if not all(key in session for key in ['db_type', 'db_host', 'db_name', 'db_user', 'schema_loaded']):
         return redirect(url_for('index'))
-    
+
     if request.method == 'POST':
         natural_language_query = request.form.get('query')
         
         if not natural_language_query:
-            return render_template('query.html', error="Please enter a query")
-        
+            return render_template('results.html', error="Please enter a query")
+
         try:
             # Create database connection
             db_url = get_db_url(
@@ -780,14 +903,13 @@ def query():
             db_manager = DatabaseManager()
             schema_info = run_async(db_manager.get_enhanced_schema_for_query_async(natural_language_query))
 
-            # Parse relevant table names from schema_info text (simple regex)
+            # Parse relevant table names from schema_info text
             relevant_tables = re.findall(r'📊 Table: (\w+)', schema_info)
 
             # Fetch 1 sample row per relevant table
-            engine = create_engine(db_url)
             sample_data = db_manager.schema_manager.fetch_sample_rows(engine, relevant_tables)
 
-            # Generate SQL from natural language + schema + sample values
+            # Generate SQL
             sql_query = run_async(generate_sql_with_relationships_async(
                 natural_language_query,
                 schema_info,
@@ -795,17 +917,15 @@ def query():
                 sample_data,
                 relevant_tables
             ))
-            
+
             if not sql_query:
-                return render_template('results.html', 
-                                     error="Failed to generate SQL query. Please try rephrasing your question.")
-            
+                return render_template('results.html', error="Failed to generate SQL query. Please try again.")
+
             # Apply PostgreSQL quoting if needed
             sql_query = quote_identifiers_if_postgres(sql_query, session['db_type'])
-            
             logger.info(f"Generated SQL: {sql_query}")
-            
-            # Execute the SQL query
+
+            # Execute the SQL
             rows, columns, final_sql = run_async(auto_fix_and_execute_query(
                 aclient,
                 engine,
@@ -815,26 +935,36 @@ def query():
                 session['db_type']
             ))
 
+            columns = list(columns)
+            chart_type = run_async(determine_smart_chart_type(rows, columns))
+            chart_data = [
+                {col: universal_serialize(val) for col, val in zip(columns, r)}
+                for r in rows
+            ]
+
+            logger.info(f"Determined chart type: {chart_type}")
+            logger.info(f"Chart data: {chart_data}")
+
+            columns = [str(c) for c in list(columns)]  # ensure JSON-safe strings
+
             return render_template(
                 'results.html',
                 query=natural_language_query,
                 sql_query=final_sql,
                 columns=columns,
                 rows=rows,
-                schema_info=schema_info
+                schema_info=schema_info,
+                chart_type=chart_type,
+                chart_data=json.dumps(chart_data)
             )
 
-            
-        except SQLAlchemyError as e:
-            logger.error(f"Database error: {e}")
-            return render_template('results.html', 
-                                 error=f"Database error: {str(e)}")
         except Exception as e:
-            logger.error(f"Unexpected error: {e}")
-            return render_template('results.html', 
-                                 error=f"Error: {str(e)}")
-    
-    return render_template('query.html')
+            logger.error(f"Query failed: {e}")
+            return render_template('results.html', error=f"Error: {str(e)}")
+
+    # 🚀 When accessed via GET (first load)
+    return render_template('results.html')
+
 
 @app.route('/api/generate-sql', methods=['POST'])
 def api_generate_sql():

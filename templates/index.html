@@ -1,78 +1,126 @@
 {% extends "base.html" %}
 
+{% block title %}Database Connection | Text-to-SQL{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="mb-0">Database Connection</h4>
-            </div>
-            <div class="card-body">
-                {% if error %}
-                    <div class="alert alert-danger">{{ error }}</div>
-                {% endif %}
-                
-                <form method="POST">
-                    <div class="mb-3">
-                        <label for="db_type" class="form-label">Database Type</label>
-                        <select class="form-select" id="db_type" name="db_type" required>
-                            <option value="postgresql">PostgreSQL</option>
-                            <option value="mysql">MySQL</option>
-                            <option value="sqlite">SQLite</option>
-                        </select>
-                    </div>
+<div class="max-w-3xl mx-auto space-y-12">
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="db_host" class="form-label">Host</label>
-                                <input type="text" class="form-control" id="db_host" name="db_host" value="localhost" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="db_port" class="form-label">Port</label>
-                                <input type="text" class="form-control" id="db_port" name="db_port" value="5432">
-                            </div>
-                        </div>
-                    </div>
+  <!-- 🧭 Page Header -->
+  <div class="text-center space-y-2">
+    <h1 class="text-3xl font-semibold text-gray-800">⚙️ Database Connection</h1>
+    <p class="text-gray-600 text-sm">
+      Connect to your database to automatically extract and understand its schema.
+    </p>
+  </div>
 
-                    <div class="mb-3">
-                        <label for="db_name" class="form-label">Database Name</label>
-                        <input type="text" class="form-control" id="db_name" name="db_name" required>
-                    </div>
+  {% if error %}
+  <div class="p-4 rounded-xl bg-red-100 text-red-700 font-medium border border-red-200 shadow-sm">
+    {{ error }}
+  </div>
+  {% endif %}
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="db_user" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="db_user" name="db_user" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="db_password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="db_password" name="db_password">
-                            </div>
-                        </div>
-                    </div>
+  <!-- 🔌 Connection Form Card -->
+  <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-8 space-y-8 border border-gray-100">
+    <form method="POST" class="space-y-8">
 
-                    <button type="submit" class="btn btn-primary">Connect & Load Schema</button>
-                </form>
-            </div>
+      <!-- Database Type -->
+      <div class="space-y-2">
+        <label for="db_type" class="block text-sm font-semibold text-gray-700">Database Type</label>
+        <select
+          id="db_type"
+          name="db_type"
+          required
+          class="w-full rounded-lg border border-gray-300 bg-white py-2.5 px-3 text-sm text-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+        >
+          <option value="postgresql">PostgreSQL</option>
+          <option value="mysql">MySQL</option>
+          <option value="sqlite">SQLite</option>
+        </select>
+      </div>
+
+      <!-- Host + Port -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="space-y-2">
+          <label for="db_host" class="block text-sm font-semibold text-gray-700">Host</label>
+          <input
+            type="text"
+            id="db_host"
+            name="db_host"
+            value="localhost"
+            required
+            class="w-full rounded-lg border border-gray-300 bg-white py-2.5 px-3 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+          />
         </div>
-        
-        <div class="mt-4">
-            <div class="alert alert-info">
-                <h6>How it works:</h6>
-                <ul class="mb-0">
-                    <li>Connect to your database to automatically extract schema information</li>
-                    <li>Schema is stored using vector embeddings for efficient retrieval</li>
-                    <li>Only relevant tables/columns are used for SQL generation</li>
-                    <li>Supports PostgreSQL, MySQL, and SQLite</li>
-                </ul>
-            </div>
+        <div class="space-y-2">
+          <label for="db_port" class="block text-sm font-semibold text-gray-700">Port</label>
+          <input
+            type="text"
+            id="db_port"
+            name="db_port"
+            value="5432"
+            class="w-full rounded-lg border border-gray-300 bg-white py-2.5 px-3 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+          />
         </div>
-    </div>
+      </div>
+
+      <!-- Database Name -->
+      <div class="space-y-2">
+        <label for="db_name" class="block text-sm font-semibold text-gray-700">Database Name</label>
+        <input
+          type="text"
+          id="db_name"
+          name="db_name"
+          required
+          class="w-full rounded-lg border border-gray-300 bg-white py-2.5 px-3 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+        />
+      </div>
+
+      <!-- Username + Password -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="space-y-2">
+          <label for="db_user" class="block text-sm font-semibold text-gray-700">Username</label>
+          <input
+            type="text"
+            id="db_user"
+            name="db_user"
+            required
+            class="w-full rounded-lg border border-gray-300 bg-white py-2.5 px-3 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+          />
+        </div>
+        <div class="space-y-2">
+          <label for="db_password" class="block text-sm font-semibold text-gray-700">Password</label>
+          <input
+            type="password"
+            id="db_password"
+            name="db_password"
+            class="w-full rounded-lg border border-gray-300 bg-white py-2.5 px-3 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+          />
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="pt-4">
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center w-full sm:w-auto gap-2 bg-indigo-600 text-white font-medium text-sm px-6 py-3 rounded-lg shadow-md hover:bg-indigo-700 hover:shadow-lg transition"
+        >
+          🔗 Connect & Load Schema
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- 💡 Info Card -->
+  <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 shadow-sm">
+    <h3 class="text-indigo-700 font-semibold mb-3">💡 How It Works</h3>
+    <ul class="list-disc list-inside text-gray-700 text-sm space-y-1">
+      <li>Connect to your database to automatically extract schema information.</li>
+      <li>Schema is embedded as vectors for efficient retrieval.</li>
+      <li>Only relevant tables and columns are used for query generation.</li>
+      <li>Supports PostgreSQL, MySQL, and SQLite.</li>
+    </ul>
+  </div>
+
 </div>
 {% endblock %}

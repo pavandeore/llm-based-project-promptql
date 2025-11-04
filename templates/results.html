@@ -1,78 +1,253 @@
 {% extends "base.html" %}
+{% block title %}AI Text-to-SQL Query Builder{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4>Query Results</h4>
-            <a href="{{ url_for('query') }}" class="btn btn-outline-primary">New Query</a>
+<!-- Include Tailwind + Alpine + ApexCharts -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<div class="max-w-7xl mx-auto py-8" 
+     x-data="queryPage()"
+     @close-logic-modal.window="showLogicModal = false">
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+    <!-- LEFT SIDE -->
+    <div class="space-y-6">
+
+      <!-- 💬 Query Input -->
+      <div class="bg-white/70 backdrop-blur rounded-2xl shadow-sm p-5 space-y-4">
+        <div class="flex justify-between items-center">
+          <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+            💬 Enter or Edit Your Question
+          </h2>
+          <a href="/" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg shadow-sm transition">
+            Change DB
+          </a>
         </div>
 
-        {% if error %}
-            <div class="alert alert-danger">
-                <h5>Error</h5>
-                <p class="mb-0">{{ error }}</p>
-            </div>
-            <a href="{{ url_for('query') }}" class="btn btn-primary">Try Again</a>
-            {% endif %}
+        <div class="space-y-3">
+          <textarea id="queryInput" rows="4"
+            class="w-full rounded-lg border border-gray-300 bg-white py-2.5 px-3 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 transition"
+            placeholder="e.g., Show me all customers who purchased last week">{{ query or '' }}</textarea>
 
-        {% if not error %}
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Query Information</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <strong>Natural Language Query:</strong>
-                        <p class="mt-1">{{ query }}</p>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Generated SQL:</strong>
-                        <pre class="mt-1 p-3 bg-light border rounded"><code>{{ sql_query }}</code></pre>
-                    </div>
-                    {% if schema_info %}
-                    <div class="schema-info p-3 rounded">
-                        <strong>Schema Used:</strong>
-                        <pre class="mt-1 mb-0"><code>{{ schema_info }}</code></pre>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
+          <div class="flex flex-wrap gap-3">
+            <button
+              @click="submitQuery"
+              class="bg-indigo-600 text-white px-6 py-2.5 rounded-lg shadow-md hover:bg-indigo-700 transition text-sm font-medium inline-flex items-center justify-center gap-2">
+              ⚙️ Generate & Execute SQL
+            </button>
 
+            <button
+              @click="fetchLogicAndOpen"
+              class="bg-cyan-100 text-cyan-800 px-5 py-2.5 rounded-lg hover:bg-cyan-200 transition text-sm font-medium shadow-sm inline-flex items-center justify-center gap-2">
+              🧩 Application Logic
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🧩 Schema Used -->
+      <div class="bg-white/70 backdrop-blur rounded-2xl shadow-sm p-5" x-data="{ open: false }">
+        <div class="flex justify-between items-center cursor-pointer" @click="open = !open">
+          <h2 class="text-lg font-semibold text-gray-800 flex items-center">🧩 Schema Used</h2>
+          <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"><path d="M5 8l5 5 5-5H5z"/></svg>
+          <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"><path d="M15 12l-5-5-5 5h10z"/></svg>
+        </div>
+        <div x-show="open" x-collapse class="mt-3">
+          <pre id="schemaInfo" class="text-xs bg-gray-50 text-gray-700 rounded-lg p-3 overflow-x-auto">{{ schema_info }}</pre>
+        </div>
+      </div>
+
+      <!-- 📊 Results Table -->
+      <div class="bg-white/70 backdrop-blur rounded-2xl shadow-sm p-5" x-data="{ open: true }">
+        <div class="flex justify-between items-center cursor-pointer" @click="open = !open">
+          <h2 class="text-lg font-semibold text-gray-800 flex items-center">📊 Query Results</h2>
+          <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"><path d="M5 8l5 5 5-5H5z"/></svg>
+          <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"><path d="M15 12l-5-5-5 5h10z"/></svg>
+        </div>
+        <div x-show="open" x-collapse class="mt-3 overflow-x-auto">
+          <div id="resultsTableContainer">
             {% if rows %}
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Results ({{ rows|length }} rows)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    {% for column in columns %}
-                                        <th>{{ column }}</th>
-                                    {% endfor %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in rows %}
-                                    <tr>
-                                        {% for value in row %}
-                                            <td>{{ value }}</td>
-                                        {% endfor %}
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+              <table class="min-w-full text-sm text-gray-700 border border-gray-200 rounded-xl overflow-hidden">
+                <thead class="bg-gray-100 text-gray-800">
+                  <tr>
+                    {% for col in columns %}
+                      <th class="px-3 py-2 text-left font-medium border-b border-gray-200">{{ col }}</th>
+                    {% endfor %}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in rows %}
+                    <tr class="even:bg-gray-50 hover:bg-gray-100 transition">
+                      {% for val in row %}
+                        <td class="px-3 py-2 border-b border-gray-100">{{ val }}</td>
+                      {% endfor %}
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             {% else %}
-            <div class="alert alert-info">
-                Query executed successfully but no results were returned.
-            </div>
+              <p class="text-sm text-gray-500 italic">No results returned.</p>
             {% endif %}
-        {% endif %}
+          </div>
+        </div>
+      </div>
+
     </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="space-y-6">
+
+      <!-- 🧠 SQL Query -->
+      <div class="bg-white/70 backdrop-blur rounded-2xl shadow-sm p-5">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">🧠 SQL Generated</h2>
+        <pre id="sqlBox" class="bg-gray-50 text-xs text-indigo-700 p-3 rounded-lg overflow-x-auto">{{ sql_query }}</pre>
+      </div>
+
+      <!-- 📈 Visualization -->
+      <div class="bg-white/70 backdrop-blur rounded-2xl shadow-sm p-5">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-lg font-semibold text-gray-800">📈 Data Visualization</h2>
+          <span id="chartTypeBadge" class="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full capitalize">{{ chart_type }}</span>
+        </div>
+        <div id="chart" class="w-full h-96 flex justify-center items-center text-gray-400 text-sm italic">
+          {% if not chart_data %}No chart data{% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 🧠 Application Logic Modal -->
+  <div x-show="showLogicModal" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+    <div @click.away="showLogicModal = false" class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-8 space-y-6 border border-gray-100">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h2 class="text-lg font-semibold text-gray-800">🧩 Application Logic</h2>
+        <button @click="showLogicModal = false" class="text-gray-500 hover:text-gray-700 text-xl leading-none">×</button>
+      </div>
+      <div x-show="!isLoading" class="space-y-2">
+        <label class="block text-sm font-semibold text-gray-700">Describe your application rules or domain logic:</label>
+        <textarea id="logicText" rows="8"
+          class="w-full border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 p-3 transition"
+          placeholder="Example: In 'project' table, type 'P' means Project and type 'R' means Recipe..."></textarea>
+      </div>
+      <div class="flex justify-end space-x-3 pt-4 border-t">
+        <button @click="showLogicModal = false" class="text-sm px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition font-medium">Cancel</button>
+        <button @click="saveLogic" class="text-sm px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition font-medium shadow">Save Logic</button>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+function queryPage() {
+  return {
+    showLogicModal: false,
+    isLoading: false,
+
+    async submitQuery() {
+      const query = document.getElementById("queryInput").value.trim();
+      if (!query) return alert("Please enter a question first.");
+
+      const resultsContainer = document.getElementById("resultsTableContainer");
+      const sqlBox = document.getElementById("sqlBox");
+      const schemaInfo = document.getElementById("schemaInfo");
+      const chartDiv = document.getElementById("chart");
+      const chartTypeBadge = document.getElementById("chartTypeBadge");
+
+      sqlBox.textContent = "⏳ Generating SQL...";
+      resultsContainer.innerHTML = `<div class="text-center text-gray-500 py-6 italic">⏳ Running query...</div>`;
+      chartDiv.innerHTML = `<div class="text-gray-400 italic">Generating chart...</div>`;
+
+      try {
+        const res = await fetch("/query", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ query }),
+        });
+
+        const html = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        sqlBox.textContent = doc.querySelector("#sqlBox")?.textContent || "No SQL generated.";
+        schemaInfo.textContent = doc.querySelector("#schemaInfo")?.textContent || "Schema unavailable.";
+
+        const newTable = doc.querySelector("#resultsTableContainer")?.innerHTML;
+        resultsContainer.innerHTML = newTable || "<p class='text-gray-500 italic'>No results.</p>";
+
+        const newChartData = JSON.parse(doc.querySelector("script[type='application/json']")?.textContent || "[]");
+        const newChartType = doc.querySelector("#chartTypeBadge")?.textContent.trim() || "bar";
+        chartTypeBadge.textContent = newChartType;
+
+        this.renderChart(newChartData, newChartType);
+
+      } catch (err) {
+        resultsContainer.innerHTML = `<div class='text-red-600'>❌ Error: ${err.message}</div>`;
+      }
+    },
+
+    renderChart(chartData, chartType) {
+      const chartDiv = document.getElementById("chart");
+      chartDiv.innerHTML = "";
+      if (!chartData.length) {
+        chartDiv.innerHTML = `<div class="text-gray-400 italic">No data to visualize.</div>`;
+        return;
+      }
+
+      const keys = Object.keys(chartData[0]);
+      const xKey = keys[0];
+      const yKeys = keys.slice(1);
+      const options = {
+        chart: { type: chartType || 'bar', height: 380, toolbar: { show: false } },
+        xaxis: { categories: chartData.map(d => d[xKey]) },
+        series: [],
+      };
+      if (chartType === 'pie' || chartType === 'donut') {
+        options.series = chartData.map(d => Object.values(d)[1]);
+        options.labels = chartData.map(d => d[xKey]);
+      } else {
+        options.series = yKeys.map(k => ({ name: k, data: chartData.map(d => d[k]) }));
+      }
+      new ApexCharts(chartDiv, options).render();
+    },
+
+    async fetchLogicAndOpen() {
+      this.isLoading = true;
+      this.showLogicModal = true;
+      try {
+        const res = await fetch("/api/get-logic");
+        const data = await res.json();
+        document.getElementById("logicText").value = data.logic || "";
+      } catch (err) {
+        alert("Error fetching logic: " + err.message);
+      }
+      this.isLoading = false;
+    },
+
+    async saveLogic() {
+      const logic = document.getElementById("logicText").value.trim();
+      if (!logic) return alert("Please enter some logic first.");
+      try {
+        const res = await fetch("/api/save-logic", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ logic }),
+        });
+        const result = await res.json();
+        if (result.status === "success") {
+          alert("✅ Logic saved successfully!");
+          this.showLogicModal = false;
+        } else {
+          alert("Error: " + result.error);
+        }
+      } catch (err) {
+        alert("Error saving logic: " + err.message);
+      }
+    },
+  };
+}
+</script>
 {% endblock %}
