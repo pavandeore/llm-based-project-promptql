@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+import pandas as pd
 from sqlalchemy import create_engine, text, MetaData, Table
 from sqlalchemy.exc import SQLAlchemyError
 from openai import AsyncOpenAI
@@ -609,7 +610,53 @@ def quote_identifiers_if_postgres(sql_query: str, db_type: str) -> str:
         logger.error(f"Error quoting identifiers for Postgres: {e}", exc_info=True)
         # On error, return the original query unmodified to avoid breaking execution
         return sql_query
-    
+
+async def rewrite_user_query_for_quality(user_query: str) -> str:
+    """
+    Uses GPT to rewrite a natural language query into a clearer, more structured analytical question.
+    """
+    try:
+        prompt = f"""
+You are an expert data analyst and business intelligence query rewriter.
+
+Your task is to rewrite the following natural language question
+into a clearer, more analytical form suitable for generating SQL queries and visualizations.
+
+Keep the same meaning, but:
+- Clarify metrics and dimensions
+- Add context like averages, totals, comparisons, trends, relationships, or time periods
+- Use business-friendly but structured phrasing
+- Prefer questions that can be visualized (scatter, trend, comparison, distribution)
+
+Example transformations:
+- "sales by region" → "Compare total sales across different regions"
+- "trend of signups" → "Show monthly trend of user signups over time"
+- "relationship between price and rating" → "Compare average rating against course price for all visible courses"
+
+USER QUERY:
+{user_query}
+
+Return ONLY the rewritten question.
+"""
+
+        response = await aclient.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You rewrite vague business questions into clear, analytical ones."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3,
+            max_tokens=100,
+        )
+
+        rewritten = response.choices[0].message.content.strip()
+        logger.info(f"🪄 Rewritten Query: {rewritten}")
+        return rewritten
+
+    except Exception as e:
+        logger.error(f"Query rewriting failed: {e}")
+        return user_query  # fallback to original
+
 async def auto_fix_and_execute_query(
     aclient,
     engine,
@@ -628,7 +675,7 @@ async def auto_fix_and_execute_query(
                 # ✅ First attempt
                 result = conn.execute(text(sql_query))
                 rows = result.fetchall()
-                columns = result.keys()
+                columns = list(result.keys()) 
                 return rows, columns, sql_query
 
             except SQLAlchemyError as e:
@@ -678,7 +725,7 @@ Instructions:
                 # Try executing the corrected SQL
                 result = conn.execute(text(fixed_sql))
                 rows = result.fetchall()
-                columns = result.keys()
+                columns = list(result.keys()) 
                 return rows, columns, fixed_sql
 
     except SQLAlchemyError as e:
@@ -758,101 +805,470 @@ def analyze_column_types(rows, columns):
     return types
 
 
-async def determine_smart_chart_type(rows, columns):
+async def analyze_visualization_intent(rows, columns, user_query):
     """
-    Uses LLM to pick a meaningful chart for *any* dataset.
-    The LLM is given both statistical context and a 10-row sample.
+    Step 1: Analyze user intent and suggest appropriate chart types with specific column mappings.
+    Returns a list of chart suggestions with their purpose and required columns.
     """
-    import numbers
-
     if not rows or not columns:
-        return {
-            "chart_type": "table",
-            "description": "No data available",
-            "series_config": [],
-            "recommended_columns": columns
-        }
-
-    # Build sample and basic stats
-    sample_data = [
-        {col: universal_serialize(val) for col, val in zip(columns, r)}
-        for r in rows[:10]
-    ]
-
-    # Heuristic column typing
-    col_types = {}
-    for i, col in enumerate(columns):
-        sample_vals = [r[i] for r in rows if r[i] is not None][:20]
-        if not sample_vals:
-            col_types[col] = "unknown"
-        elif all(isinstance(v, (int, float, np.number)) for v in sample_vals):
-            col_types[col] = "numeric"
-        elif all(isinstance(v, (datetime.date, datetime.datetime)) for v in sample_vals):
-            col_types[col] = "datetime"
-        elif len(set(sample_vals)) < len(sample_vals) / 2:
-            col_types[col] = "categorical"
-        else:
-            col_types[col] = "text"
-
-    prompt = f"""
-    You are an expert data visualization analyst.
-
-    Given:
-    - Dataset sample (10 rows below)
-    - Column type summary
-    Your job is to choose the *most meaningful visualization or combination of charts*
-    that would help a human quickly understand the dataset.
-
-    You may:
-    - Aggregate, count, or group data (e.g. frequency by category, sum by group)
-    - Combine charts (e.g. bar + line, pie + table)
-    - Choose logical x/y axes
-    - Skip meaningless IDs or GUIDs
-    - Default to 'table' ONLY if the data truly cannot be visualized (e.g. all unique IDs)
-
-    Data sample:
-    {json.dumps(sample_data, indent=2)}
-
-    Column types:
-    {json.dumps(col_types, indent=2)}
-
-    Return strictly valid JSON:
-    {{
-      "chart_type": "bar" | "line" | "pie" | "scatter" | "combo" | "table",
-      "description": "short plain-English reasoning for chart choice",
-      "recommended_columns": ["colA", "colB", ...],
-      "series_config": [
-        {{
-          "type": "bar" | "line" | "area" | ...,
-          "x": "column_for_x_axis",
-          "y": "column_for_y_axis",
-          "aggregation": "sum" | "count" | "avg" | null
-        }}
-      ]
-    }}
-    """
+        return {"suggestions": [], "primary_insight": "No data available", "all_columns": columns}
 
     try:
+        # Convert rows to proper format for DataFrame
+        # Handle both SQLAlchemy Row objects and regular tuples/dicts
+        if hasattr(rows[0], '_asdict'):
+            # SQLAlchemy Row objects
+            row_dicts = [row._asdict() for row in rows]
+        elif isinstance(rows[0], (tuple, list)):
+            # Regular tuples/lists
+            row_dicts = [dict(zip(columns, row)) for row in rows]
+        else:
+            # Assume already dictionaries
+            row_dicts = rows
+        
+        df = pd.DataFrame(row_dicts)
+        
+        # Ensure all columns are strings
+        df.columns = [str(col) for col in df.columns]
+        
+        df_info = {
+            "shape": df.shape,
+            "columns": list(df.columns),
+            "dtypes": {str(col): str(dtype) for col, dtype in df.dtypes.items()},
+            "null_counts": df.isnull().sum().to_dict(),
+            "unique_counts": df.nunique().to_dict()
+        }
+
+        prompt = f"""
+You are a senior data analyst. Analyze the user's query and dataset to suggest the most meaningful visualizations.
+
+USER QUERY: {user_query}
+
+DATASET OVERVIEW:
+- Shape: {df_info['shape']}
+- Columns: {df_info['columns']}
+- Data Types: {df_info['dtypes']}
+- Unique Values per Column: {df_info['unique_counts']}
+
+ANALYSIS TASK:
+1. Understand the user's analytical intent from their query
+2. Suggest 1-3 specific chart types that would best answer their question
+3. For each chart, specify EXACT which columns to use and why
+
+CHART TYPE CATEGORIES:
+- COMPARISON: bar, column, grouped_bar (comparing categories)
+- TREND: line, area (showing changes over time/sequence)
+- DISTRIBUTION: histogram, box_plot, scatter (showing data spread)
+- COMPOSITION: pie, stacked_bar, donut (showing parts of whole)
+- RELATIONSHIP: scatter, bubble (showing correlations)
+- METRIC: big_number, gauge (showing key metrics)
+
+OUTPUT FORMAT (JSON):
+{{
+  "chart_suggestions": [
+    {{
+      "chart_name": "Descriptive name for this visualization",
+      "chart_type": "bar|line|pie|scatter|combo|histogram|big_number|etc",
+      "purpose": "What business question this chart answers",
+      "required_columns": ["col1", "col2", "col3"],  // MAX 4 columns
+      "primary_metric": "column_name",  // main metric being measured
+      "breakdown_by": "column_name",    // dimension for breakdown
+      "time_series": "column_name"      // if time-based analysis
+    }}
+  ],
+  "primary_insight": "Overall main insight from the data based on user query"
+}}
+
+EXAMPLES:
+For "Show sales by region":
+{{
+  "chart_suggestions": [
+    {{
+      "chart_name": "Sales by Region",
+      "chart_type": "bar",
+      "purpose": "Compare total sales across different regions",
+      "required_columns": ["region", "sales_amount"],
+      "primary_metric": "sales_amount",
+      "breakdown_by": "region"
+    }}
+  ]
+}}
+
+For "Revenue trend over time":
+{{
+  "chart_suggestions": [
+    {{
+      "chart_name": "Monthly Revenue Trend",
+      "chart_type": "line", 
+      "purpose": "Show revenue growth/decline over time",
+      "required_columns": ["month", "revenue"],
+      "primary_metric": "revenue",
+      "time_series": "month"
+    }}
+  ]
+}}
+"""
+
         response = await aclient.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are a senior data visualization expert."},
+                {"role": "system", "content": "You are a data visualization strategist that understands business context."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.1,
+            max_tokens=1200,
+            response_format={"type": "json_object"},
+        )
+
+        result = json.loads(response.choices[0].message.content)
+        
+        # Validate and limit to max 3 suggestions
+        suggestions = result.get("chart_suggestions", [])[:3]
+        
+        # Ensure each suggestion has max 4 columns and columns exist in dataframe
+        valid_columns = set(df.columns)
+        for suggestion in suggestions:
+            if "required_columns" in suggestion:
+                # Filter to only include columns that actually exist
+                suggestion["required_columns"] = [
+                    col for col in suggestion["required_columns"][:4] 
+                    if col in valid_columns
+                ]
+        
+        return {
+            "suggestions": suggestions,
+            "primary_insight": result.get("primary_insight", ""),
+            "all_columns": list(df.columns)
+        }
+
+    except Exception as e:
+        logger.error(f"Visualization intent analysis failed: {e}")
+        return {"suggestions": [], "primary_insight": f"Analysis failed: {str(e)}", "all_columns": columns}
+
+
+async def create_detailed_chart_config(chart_suggestion, rows, columns, user_query):
+    """
+    Step 2: Create detailed configuration for a specific chart suggestion.
+    """
+    if not chart_suggestion or not rows:
+        return None
+
+    try:
+        # Convert rows to proper format for DataFrame
+        if hasattr(rows[0], '_asdict'):
+            row_dicts = [row._asdict() for row in rows]
+        elif isinstance(rows[0], (tuple, list)):
+            row_dicts = [dict(zip(columns, row)) for row in rows]
+        else:
+            row_dicts = rows
+        
+        df = pd.DataFrame(row_dicts)
+        df.columns = [str(col) for col in df.columns]
+        
+        required_cols = chart_suggestion.get("required_columns", [])
+        
+        # Filter dataframe to only required columns that exist
+        available_cols = [col for col in required_cols if col in df.columns]
+        if not available_cols:
+            available_cols = df.columns.tolist()[:4]  # fallback to first 4 columns
+            
+        chart_df = df[available_cols].copy()
+        
+        # Sample data for context
+        sample_data = chart_df.head(10).to_dict('records')
+        
+        prompt = f"""
+You are a chart configuration expert. Create detailed visualization specifications.
+
+CHART REQUEST:
+- User Query: {user_query}
+- Chart Name: {chart_suggestion.get('chart_name', 'Unknown')}
+- Chart Type: {chart_suggestion.get('chart_type', 'bar')}
+- Purpose: {chart_suggestion.get('purpose', '')}
+- Required Columns: {available_cols}
+
+SAMPLE DATA (first 10 rows):
+{json.dumps(sample_data, indent=2, default=str)}
+
+CHART CONFIGURATION TASK:
+Create a complete chart configuration including:
+1. Exact series mapping (x-axis, y-axis, categories)
+2. Appropriate aggregations (sum, count, average)
+3. Color schemes and styling recommendations
+4. Axis labels and formatting
+5. Any data transformations needed
+
+OUTPUT FORMAT (JSON):
+{{
+  "chart_type": "{chart_suggestion.get('chart_type', 'bar')}",
+  "chart_title": "Clear, descriptive title",
+  "chart_description": "What this chart shows",
+  "recommended_columns": {available_cols},
+  "series_config": [
+    {{
+      "type": "bar|line|area|pie|scatter",
+      "x": "column_for_x_axis",
+      "y": "column_for_y_axis", 
+      "aggregation": "sum|count|avg|min|max|none",
+      "name": "Series display name",
+      "color": "#hex_color",  // optional
+      "stacking": true|false  // for bar charts
+    }}
+  ],
+  "x_axis": {{
+    "title": "X Axis Label",
+    "type": "category|datetime|numeric"
+  }},
+  "y_axis": {{
+    "title": "Y Axis Label", 
+    "type": "numeric"
+  }},
+  "data_transformations": [
+    "Sort by x-axis ascending",
+    "Filter out null values in y-axis"
+  ]
+}}
+
+EXAMPLES:
+
+For bar chart comparing categories:
+{{
+  "chart_type": "bar",
+  "chart_title": "Sales by Region",
+  "series_config": [
+    {{
+      "type": "bar",
+      "x": "region",
+      "y": "sales_amount", 
+      "aggregation": "sum",
+      "name": "Total Sales"
+    }}
+  ]
+}}
+
+For time series line chart:
+{{
+  "chart_type": "line", 
+  "chart_title": "Revenue Trend Over Time",
+  "series_config": [
+    {{
+      "type": "line",
+      "x": "month",
+      "y": "revenue",
+      "aggregation": "sum", 
+      "name": "Monthly Revenue"
+    }}
+  ]
+}}
+"""
+
+        response = await aclient.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "You create precise chart configurations for data visualization libraries."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.1,
+            max_tokens=1000,
+            response_format={"type": "json_object"},
+        )
+
+        config = json.loads(response.choices[0].message.content)
+        
+        # Add original suggestion context
+        config["original_suggestion"] = chart_suggestion
+        
+        return config
+
+    except Exception as e:
+        logger.error(f"Detailed chart config failed: {e}")
+        return None
+
+  
+async def determine_smart_chart_type_multi_step(rows, columns, user_query):
+    """
+    Multi-step chart determination process for higher quality visualizations.
+    """
+    if not rows or not columns:
+        return {
+            "chart_type": "table",
+            "description": "No data available for visualization",
+            "series_config": [],
+            "recommended_columns": columns if columns else [],
+            "all_charts": []
+        }
+
+    try:
+        # Step 1: Analyze intent and get chart suggestions
+        logger.info("🔍 Step 1: Analyzing visualization intent...")
+        intent_analysis = await analyze_visualization_intent(rows, columns, user_query)
+        
+        if not intent_analysis.get("suggestions"):
+            logger.warning("No chart suggestions generated, falling back to table")
+            return {
+                "chart_type": "table",
+                "description": intent_analysis.get("primary_insight", "No specific visualizations suggested"),
+                "series_config": [],
+                "recommended_columns": columns[:4] if columns else [],
+                "all_charts": []
+            }
+
+        # Step 2: Create detailed config for the primary chart (first suggestion)
+        logger.info("🎨 Step 2: Creating detailed chart configuration...")
+        primary_suggestion = intent_analysis["suggestions"][0]
+        detailed_config = await create_detailed_chart_config(
+            primary_suggestion, rows, columns, user_query
+        )
+
+        if not detailed_config:
+            logger.warning("Detailed config failed, using fallback")
+            return {
+                "chart_type": primary_suggestion.get("chart_type", "table"),
+                "description": primary_suggestion.get("purpose", ""),
+                "series_config": [],
+                "recommended_columns": primary_suggestion.get("required_columns", columns[:4] if columns else []),
+                "all_charts": intent_analysis["suggestions"]
+            }
+
+        # Return comprehensive result
+        return {
+            "chart_type": detailed_config.get("chart_type", "table"),
+            "chart_title": detailed_config.get("chart_title", ""),
+            "description": detailed_config.get("chart_description", primary_suggestion.get("purpose", "")),
+            "series_config": detailed_config.get("series_config", []),
+            "recommended_columns": detailed_config.get("recommended_columns", columns[:4] if columns else []),
+            "all_charts": intent_analysis["suggestions"],
+            "primary_insight": intent_analysis.get("primary_insight", ""),
+            "x_axis": detailed_config.get("x_axis", {}),
+            "y_axis": detailed_config.get("y_axis", {}),
+            "data_transformations": detailed_config.get("data_transformations", [])
+        }
+
+    except Exception as e:
+        logger.error(f"Multi-step chart determination failed: {e}")
+        # Fallback to original method with proper error handling
+        try:
+            return await determine_smart_chart_type(rows, columns, user_query)
+        except Exception as fallback_error:
+            logger.error(f"Fallback chart determination also failed: {fallback_error}")
+            return {
+                "chart_type": "table",
+                "description": f"Visualization failed: {str(e)}",
+                "series_config": [],
+                "recommended_columns": columns[:4] if columns else [],
+                "all_charts": []
+            }
+
+async def determine_smart_chart_type(rows, columns, user_query):
+    """
+    Uses LLM to pick meaningful charts and select only 2-4 relevant columns.
+    Uses pandas for robust type detection and data analysis.
+    """
+    if not rows or not columns:
+        return {
+            "chart_type": "table",
+            "description": "No data available for visualization",
+            "series_config": [],
+            "recommended_columns": columns if columns else []
+        }
+
+    try:
+        # Convert rows to proper format
+        if hasattr(rows[0], '_asdict'):
+            row_dicts = [row._asdict() for row in rows]
+        elif isinstance(rows[0], (tuple, list)):
+            row_dicts = [dict(zip(columns, row)) for row in rows]
+        else:
+            row_dicts = rows
+        
+        df = pd.DataFrame(row_dicts)
+        df.columns = [str(col) for col in df.columns]
+        
+        # Basic DataFrame info for the prompt
+        df_info = {
+            "shape": df.shape,
+            "columns": list(df.columns),
+            "dtypes": {str(col): str(dtype) for col, dtype in df.dtypes.items()},
+            "null_counts": df.isnull().sum().to_dict(),
+            "unique_counts": df.nunique().to_dict()
+        }
+
+        # Enhanced prompt with data insights
+        prompt = f"""
+You are an expert data visualization analyst. Your task is to:
+
+1. Analyze the dataset and select ONLY 2-4 most meaningful columns for visualization
+2. Recommend the best chart type(s) - can be simple (bar, line, pie) or combined (line+bar)
+3. Provide clear series configuration for the visualization
+
+User Query: {user_query}
+
+DATASET OVERVIEW:
+- Shape: {df_info['shape']}
+- Columns: {df_info['columns']}
+- Data Types: {df_info['dtypes']}
+
+SELECTION CRITERIA:
+- Prefer columns with meaningful patterns (categories, trends, distributions)
+- Avoid ID columns, timestamps (unless for time series), or high-cardinality text
+- For large datasets (>3 cols), focus on the most insightful 2-4 columns
+- Consider relationships between columns (x-axis vs y-axis)
+
+CHART TYPE GUIDELINES:
+- Bar charts: Compare categories with numeric values
+- Line charts: Show trends over time/sequence
+- Pie charts: Show proportions (use sparingly, max 6-8 categories)
+- Scatter plots: Show relationships between two numeric variables
+- Combo charts: Use when multiple series need different visual encodings
+
+RETURN STRICT JSON FORMAT:
+{{
+"chart_type": "bar" | "line" | "pie" | "scatter" | "combo" | "table",
+"description": "Brief reasoning for chart and column selection",
+"recommended_columns": ["col1", "col2", ...],  // MAX 4 COLUMNS
+"series_config": [
+    {{
+    "type": "bar" | "line" | "area" | "pie",
+    "x": "column_for_x_axis",
+    "y": "column_for_y_axis",  // optional for pie charts
+    "aggregation": "sum" | "count" | "avg" | null,
+    "name": "Series display name"
+    }}
+]
+}}
+
+IMPORTANT: If the data is too complex or has too many text columns, recommend "table" visualization.
+"""
+
+        response = await aclient.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "You are a senior data visualization expert that selects only the most meaningful columns."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.2,
-            max_tokens=700,
+            max_tokens=800,
             response_format={"type": "json_object"},
         )
+
         result = json.loads(response.choices[0].message.content)
+        
+        # Validate and ensure recommended_columns has max 4 columns
+        if "recommended_columns" in result and len(result["recommended_columns"]) > 4:
+            result["recommended_columns"] = result["recommended_columns"][:4]
+            result["description"] += " (Limited to 4 most relevant columns)"
+            
         return result
 
     except Exception as e:
         logger.error(f"Chart type decision failed: {e}")
+        # Fallback: use original columns (limited to 4)
+        fallback_columns = columns[:4] if columns and len(columns) > 4 else (columns if columns else [])
         return {
             "chart_type": "table",
-            "description": "Fallback due to error",
+            "description": f"Fallback due to error: {str(e)}",
             "series_config": [],
-            "recommended_columns": columns
+            "recommended_columns": fallback_columns
         }
 
 @app.route('/', methods=['GET', 'POST'])
@@ -909,6 +1325,7 @@ def query():
     if request.method == 'POST':
         natural_language_query = request.form.get('query')
         
+        
         if not natural_language_query:
             return render_template('results.html', error="Please enter a query")
 
@@ -935,9 +1352,13 @@ def query():
             # Fetch 1 sample row per relevant table
             sample_data = db_manager.schema_manager.fetch_sample_rows(engine, relevant_tables)
 
+            # Step 2: Enhance the question first
+            enhanced_query = run_async(rewrite_user_query_for_quality(natural_language_query))
+            logger.info(f"Enhanced Query for SQL: {enhanced_query}")
+
             # Generate SQL
             sql_query = run_async(generate_sql_with_relationships_async(
-                natural_language_query,
+                enhanced_query,
                 schema_info,
                 session['db_type'],
                 sample_data,
@@ -966,13 +1387,17 @@ def query():
                 {c: universal_serialize(v) for c, v in zip(columns, r)} for r in rows
             ]
 
-            # Run GPT-based chart analyzer
-            chart_info = run_async(determine_smart_chart_type(rows, columns))
+            # Run GPT-based chart analyzer multi-step approach:
+            chart_info = run_async(determine_smart_chart_type_multi_step(rows, columns, natural_language_query))
 
+            # Use the new chart_info structure
             recommended_cols = chart_info.get("recommended_columns", columns)
             chart_type = chart_info.get("chart_type", "table")
             chart_description = chart_info.get("description", "")
             series_config = chart_info.get("series_config", [])
+            chart_title = chart_info.get("chart_title", "")
+            primary_insight = chart_info.get("primary_insight", "")
+            all_charts = chart_info.get("all_charts", [])
 
             # Filtered rows ONLY for visualization
             chart_rows = [
@@ -992,15 +1417,18 @@ def query():
                 'results.html',
                 query=natural_language_query,
                 sql_query=final_sql,
-                columns=columns,                # full columns from DB
-                rows=serialized_rows,           # full data for table
+                columns=columns,
+                rows=serialized_rows,
                 schema_info=schema_info,
                 chart_type=chart_type,
+                chart_title=chart_title,
                 chart_description=chart_description,
-                series_config=json.dumps(series_config),
-                chart_data=json.dumps(chart_data)  # filtered for visualization
+                primary_insight=primary_insight,
+                all_charts=all_charts,
+                series_config=series_config,     # 🚫 no json.dumps
+                chart_data=chart_data,           # 🚫 no json.dumps
+                recommended_columns=recommended_cols
             )
-
         except Exception as e:
             logger.error(f"Query failed: {e}")
             return render_template('results.html', error=f"Error: {str(e)}")
@@ -1069,7 +1497,7 @@ def save_application_logic():
 
         # Save to file
         with open(logic_path, "w") as f:
-            json.dump({"logic": logic_text, "updated": datetime.now().isoformat()}, f, indent=2)
+            json.dump({"logic": logic_text, "updated": datetime.datetime.now().isoformat()}, f, indent=2)
 
         logger.info("✅ Application logic saved successfully.")
         return jsonify({"status": "success"})
