@@ -20,9 +20,9 @@
       <div class="bg-white/70 backdrop-blur rounded-2xl shadow-sm p-5 space-y-4">
         <div class="flex justify-between items-center">
           <h2 class="text-lg font-semibold text-gray-800 flex items-center">
-            💬 Enter or Edit Your Question
+            Enter or Edit Your Question
           </h2>
-          <a href="/" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg shadow-sm transition">
+          <a href="/" class="text-sm bg-gray-100 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-lg shadow-sm transition border">
             Change DB
           </a>
         </div>
@@ -36,13 +36,13 @@
             <button
               @click="submitQuery"
               class="bg-indigo-600 text-white px-6 py-2.5 rounded-lg shadow-md hover:bg-indigo-700 transition text-sm font-medium inline-flex items-center justify-center gap-2">
-              ⚙️ Generate & Execute SQL
+              Generate & Execute SQL
             </button>
 
             <button
               @click="fetchLogicAndOpen"
-              class="bg-cyan-100 text-cyan-800 px-5 py-2.5 rounded-lg hover:bg-cyan-200 transition text-sm font-medium shadow-sm inline-flex items-center justify-center gap-2">
-              🧩 Application Logic
+              class="bg-gray-100 text-gray-700 px-5 py-2.5 rounded-lg hover:bg-gray-50 transition text-sm font-medium shadow-sm inline-flex items-center justify-center gap-2 border">
+              Application Logic
             </button>
           </div>
         </div>
@@ -51,7 +51,7 @@
       <!-- 🧩 Schema Used -->
       <div class="bg-white/70 backdrop-blur rounded-2xl shadow-sm p-5" x-data="{ open: false }">
         <div class="flex justify-between items-center cursor-pointer" @click="open = !open">
-          <h2 class="text-lg font-semibold text-gray-800 flex items-center">🧩 Schema Used</h2>
+          <h2 class="text-lg font-semibold text-gray-800 flex items-center">Schema Used</h2>
           <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"><path d="M5 8l5 5 5-5H5z"/></svg>
           <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"><path d="M15 12l-5-5-5 5h10z"/></svg>
         </div>
@@ -63,7 +63,7 @@
       <!-- 📊 Results Table -->
       <div class="bg-white/70 backdrop-blur rounded-2xl shadow-sm p-5" x-data="{ open: true }">
         <div class="flex justify-between items-center cursor-pointer" @click="open = !open">
-          <h2 class="text-lg font-semibold text-gray-800 flex items-center">📊 Query Results</h2>
+          <h2 class="text-lg font-semibold text-gray-800 flex items-center">Query Results</h2>
           <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"><path d="M5 8l5 5 5-5H5z"/></svg>
           <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500"><path d="M15 12l-5-5-5 5h10z"/></svg>
         </div>
@@ -81,8 +81,8 @@
                 <tbody>
                   {% for row in rows %}
                     <tr class="even:bg-gray-50 hover:bg-gray-100 transition">
-                      {% for val in row %}
-                        <td class="px-3 py-2 border-b border-gray-100">{{ val }}</td>
+                      {% for col in columns %}
+                        <td class="px-3 py-2 border-b border-gray-100">{{ row[col] }}</td>
                       {% endfor %}
                     </tr>
                   {% endfor %}
@@ -102,19 +102,31 @@
 
       <!-- 🧠 SQL Query -->
       <div class="bg-white/70 backdrop-blur rounded-2xl shadow-sm p-5">
-        <h2 class="text-lg font-semibold text-gray-800 mb-3">🧠 SQL Generated</h2>
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">SQL Generated</h2>
         <pre id="sqlBox" class="bg-gray-50 text-xs text-indigo-700 p-3 rounded-lg overflow-x-auto">{{ sql_query }}</pre>
       </div>
 
       <!-- 📈 Visualization -->
       <div class="bg-white/70 backdrop-blur rounded-2xl shadow-sm p-5">
         <div class="flex justify-between items-center mb-3">
-          <h2 class="text-lg font-semibold text-gray-800">📈 Data Visualization</h2>
+          <h2 class="text-lg font-semibold text-gray-800">AI-Generated Visualization</h2>
           <span id="chartTypeBadge" class="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full capitalize">{{ chart_type }}</span>
         </div>
+
+        {% if chart_description %}
+          <p class="text-xs text-gray-500 mb-2 italic">{{ chart_description }}</p>
+        {% endif %}
+
         <div id="chart" class="w-full h-96 flex justify-center items-center text-gray-400 text-sm italic">
           {% if not chart_data %}No chart data{% endif %}
         </div>
+
+        {% if chart_data %}
+          <script id="chart-data-json" type="application/json">{{ chart_data | safe }}</script>
+        {% endif %}
+        {% if series_config %}
+          <script id="chart-series-json" type="application/json">{{ series_config | safe }}</script>
+        {% endif %}
       </div>
 
     </div>
@@ -124,8 +136,8 @@
   <div x-show="showLogicModal" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
     <div @click.away="showLogicModal = false" class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-8 space-y-6 border border-gray-100">
       <div class="flex justify-between items-center border-b pb-3">
-        <h2 class="text-lg font-semibold text-gray-800">🧩 Application Logic</h2>
-        <button @click="showLogicModal = false" class="text-gray-500 hover:text-gray-700 text-xl leading-none">×</button>
+        <h2 class="text-lg font-semibold text-gray-800">Application Logic</h2>
+        <button @click="showLogicModal = false" class="text-gray-500 hover:text-gray-700 text-xl leading-none">x</button>
       </div>
       <div x-show="!isLoading" class="space-y-2">
         <label class="block text-sm font-semibold text-gray-700">Describe your application rules or domain logic:</label>
@@ -178,40 +190,66 @@ function queryPage() {
         const newTable = doc.querySelector("#resultsTableContainer")?.innerHTML;
         resultsContainer.innerHTML = newTable || "<p class='text-gray-500 italic'>No results.</p>";
 
-        const newChartData = JSON.parse(doc.querySelector("script[type='application/json']")?.textContent || "[]");
-        const newChartType = doc.querySelector("#chartTypeBadge")?.textContent.trim() || "bar";
-        chartTypeBadge.textContent = newChartType;
+        const chartDataScript = doc.querySelector("#chart-data-json")?.textContent || "[]";
+        const seriesConfigScript = doc.querySelector("#chart-series-json")?.textContent || "[]";
 
-        this.renderChart(newChartData, newChartType);
+        const newChartData = JSON.parse(chartDataScript);
+        const newSeriesConfig = JSON.parse(seriesConfigScript);
+        const newChartType = doc.querySelector("#chartTypeBadge")?.textContent.trim() || "bar";
+
+        chartTypeBadge.textContent = newChartType;
+        this.renderChart(newChartData, newSeriesConfig, newChartType);
 
       } catch (err) {
         resultsContainer.innerHTML = `<div class='text-red-600'>❌ Error: ${err.message}</div>`;
       }
     },
 
-    renderChart(chartData, chartType) {
+    renderChart(chartData, seriesConfig, chartType) {
       const chartDiv = document.getElementById("chart");
       chartDiv.innerHTML = "";
-      if (!chartData.length) {
+      if (!chartData.length || !seriesConfig.length) {
         chartDiv.innerHTML = `<div class="text-gray-400 italic">No data to visualize.</div>`;
         return;
       }
 
-      const keys = Object.keys(chartData[0]);
-      const xKey = keys[0];
-      const yKeys = keys.slice(1);
-      const options = {
-        chart: { type: chartType || 'bar', height: 380, toolbar: { show: false } },
-        xaxis: { categories: chartData.map(d => d[xKey]) },
-        series: [],
-      };
-      if (chartType === 'pie' || chartType === 'donut') {
-        options.series = chartData.map(d => Object.values(d)[1]);
-        options.labels = chartData.map(d => d[xKey]);
-      } else {
-        options.series = yKeys.map(k => ({ name: k, data: chartData.map(d => d[k]) }));
+      const series = [];
+
+      seriesConfig.forEach(cfg => {
+        const x = cfg.x;
+        const y = cfg.y;
+        const type = cfg.type || chartType;
+
+        if (!x || !y) return;
+
+        const points = chartData
+          .map(d => ({ x: d[x], y: parseFloat(d[y]) }))
+          .filter(p => !isNaN(p.y));
+
+        if (points.length > 0) {
+          series.push({ name: y, type, data: points });
+        }
+      });
+
+      if (!series.length) {
+        chartDiv.innerHTML = `<div class="text-gray-400 italic">No numeric data found for visualization.</div>`;
+        return;
       }
-      new ApexCharts(chartDiv, options).render();
+
+      const options = {
+        chart: { height: 380, toolbar: { show: true } },
+        series,
+        xaxis: { type: "category", labels: { rotate: -45 } },
+        yaxis: { title: { text: "Value" } },
+        tooltip: { shared: true },
+      };
+
+      try {
+        new ApexCharts(chartDiv, options).render();
+      } catch (err) {
+        console.error("Chart render error:", err);
+        chartDiv.innerHTML = `<div class='text-red-500 italic'>Chart rendering failed.</div>`;
+      }
     },
 
     async fetchLogicAndOpen() {
@@ -249,5 +287,59 @@ function queryPage() {
     },
   };
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const chartDataEl = document.querySelector("#chart-data-json");
+  const seriesEl = document.querySelector("#chart-series-json");
+  const chartDiv = document.getElementById("chart");
+  const chartType = document.querySelector("#chartTypeBadge")?.textContent.trim() || "bar";
+
+  if (!chartDataEl || !seriesEl) {
+    chartDiv.innerHTML = `<div class='text-gray-400 italic'>No visualization available.</div>`;
+    return;
+  }
+
+  const data = JSON.parse(chartDataEl.textContent || "[]");
+  const seriesConfig = JSON.parse(seriesEl.textContent || "[]");
+
+  if (!data.length || !seriesConfig.length) {
+    chartDiv.innerHTML = `<div class='text-gray-400 italic'>No chartable data.</div>`;
+    return;
+  }
+
+  const series = [];
+
+  seriesConfig.forEach(cfg => {
+    const x = cfg.x;
+    const y = cfg.y;
+    const type = cfg.type || chartType;
+    if (!x || !y) return;
+
+    const points = data.map(d => ({ x: d[x], y: parseFloat(d[y]) })).filter(p => !isNaN(p.y));
+    if (points.length > 0) {
+      series.push({ name: y, type, data: points });
+    }
+  });
+
+  if (!series.length) {
+    chartDiv.innerHTML = `<div class='text-gray-400 italic'>No numeric data to visualize.</div>`;
+    return;
+  }
+
+  const options = {
+    chart: { height: 380, toolbar: { show: true } },
+    series,
+    xaxis: { type: 'category', labels: { rotate: -45 } },
+    yaxis: { title: { text: 'Value' } },
+    tooltip: { shared: true },
+  };
+
+  try {
+    new ApexCharts(chartDiv, options).render();
+  } catch (err) {
+    console.error("Chart render error:", err);
+    chartDiv.innerHTML = `<div class='text-red-500 italic'>Chart rendering failed.</div>`;
+  }
+});
 </script>
 {% endblock %}

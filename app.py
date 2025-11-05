@@ -760,74 +760,100 @@ def analyze_column_types(rows, columns):
 
 async def determine_smart_chart_type(rows, columns):
     """
-    Decide best chart type using local heuristics first, fallback to OpenAI when ambiguous.
-    Returns: chart_type (string)
+    Uses LLM to pick a meaningful chart for *any* dataset.
+    The LLM is given both statistical context and a 10-row sample.
     """
+    import numbers
+
     if not rows or not columns:
-        return "table"
+        return {
+            "chart_type": "table",
+            "description": "No data available",
+            "series_config": [],
+            "recommended_columns": columns
+        }
 
-    # Analyze column types
-    col_types = analyze_column_types(rows, columns)
-    type_counts = {
-        "numeric": sum(1 for t in col_types.values() if t == "numeric"),
-        "categorical": sum(1 for t in col_types.values() if t == "categorical"),
-        "datetime": sum(1 for t in col_types.values() if t == "datetime"),
-    }
+    # Build sample and basic stats
+    sample_data = [
+        {col: universal_serialize(val) for col, val in zip(columns, r)}
+        for r in rows[:10]
+    ]
 
-    # 🧠 Local heuristic rules (fast path)
-    if type_counts["datetime"] >= 1 and type_counts["numeric"] >= 1:
-        return "line"
-    if type_counts["categorical"] >= 1 and type_counts["numeric"] >= 1:
-        return "bar"
-    if type_counts["numeric"] == 2:
-        return "scatter"
-    if type_counts["numeric"] > 2:
-        return "bubble"
-    if type_counts["categorical"] == 1 and len(rows) <= 10:
-        return "pie"
+    # Heuristic column typing
+    col_types = {}
+    for i, col in enumerate(columns):
+        sample_vals = [r[i] for r in rows if r[i] is not None][:20]
+        if not sample_vals:
+            col_types[col] = "unknown"
+        elif all(isinstance(v, (int, float, np.number)) for v in sample_vals):
+            col_types[col] = "numeric"
+        elif all(isinstance(v, (datetime.date, datetime.datetime)) for v in sample_vals):
+            col_types[col] = "datetime"
+        elif len(set(sample_vals)) < len(sample_vals) / 2:
+            col_types[col] = "categorical"
+        else:
+            col_types[col] = "text"
 
-    # 🧠 Fallback: ask OpenAI if uncertain
+    prompt = f"""
+    You are an expert data visualization analyst.
+
+    Given:
+    - Dataset sample (10 rows below)
+    - Column type summary
+    Your job is to choose the *most meaningful visualization or combination of charts*
+    that would help a human quickly understand the dataset.
+
+    You may:
+    - Aggregate, count, or group data (e.g. frequency by category, sum by group)
+    - Combine charts (e.g. bar + line, pie + table)
+    - Choose logical x/y axes
+    - Skip meaningless IDs or GUIDs
+    - Default to 'table' ONLY if the data truly cannot be visualized (e.g. all unique IDs)
+
+    Data sample:
+    {json.dumps(sample_data, indent=2)}
+
+    Column types:
+    {json.dumps(col_types, indent=2)}
+
+    Return strictly valid JSON:
+    {{
+      "chart_type": "bar" | "line" | "pie" | "scatter" | "combo" | "table",
+      "description": "short plain-English reasoning for chart choice",
+      "recommended_columns": ["colA", "colB", ...],
+      "series_config": [
+        {{
+          "type": "bar" | "line" | "area" | ...,
+          "x": "column_for_x_axis",
+          "y": "column_for_y_axis",
+          "aggregation": "sum" | "count" | "avg" | null
+        }}
+      ]
+    }}
+    """
+
     try:
-        sample_data = [
-            {col: universal_serialize(val) for col, val in zip(columns, r)}
-            for r in rows[:10]
-        ]
-
-        prompt = f"""
-        You are a data visualization expert.
-        Given the following SQL query result (JSON), choose the most appropriate visualization type.
-
-        Data (sample):
-        {json.dumps(sample_data, indent=2)}
-
-        Rules:
-        - If one categorical column and one numeric column → 'bar'
-        - If two numeric columns → 'scatter'
-        - If one date/time column and one numeric column → 'line'
-        - If one column with few unique values and one numeric → 'pie'
-        - If three numeric columns → 'bubble'
-        - If time-series with multiple metrics → 'area'
-        - Otherwise choose 'bar'
-
-        Return ONLY one word: the chart type.
-        """
-
         response = await aclient.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are a visualization expert."},
-                {"role": "user", "content": prompt},
+                {"role": "system", "content": "You are a senior data visualization expert."},
+                {"role": "user", "content": prompt}
             ],
-            temperature=0.1,
-            max_tokens=10,
+            temperature=0.2,
+            max_tokens=700,
+            response_format={"type": "json_object"},
         )
-        chart_type = response.choices[0].message.content.strip().lower()
-        if chart_type not in ["bar", "line", "pie", "scatter", "area", "bubble", "donut", "heatmap"]:
-            chart_type = "bar"
-        return chart_type
+        result = json.loads(response.choices[0].message.content)
+        return result
+
     except Exception as e:
-        logger.error(f"Error determining chart type: {e}")
-        return "bar"
+        logger.error(f"Chart type decision failed: {e}")
+        return {
+            "chart_type": "table",
+            "description": "Fallback due to error",
+            "series_config": [],
+            "recommended_columns": columns
+        }
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -935,12 +961,27 @@ def query():
                 session['db_type']
             ))
 
-            columns = list(columns)
-            chart_type = run_async(determine_smart_chart_type(rows, columns))
-            chart_data = [
-                {col: universal_serialize(val) for col, val in zip(columns, r)}
-                for r in rows
+            # Serialize full rows for table display
+            serialized_rows = [
+                {c: universal_serialize(v) for c, v in zip(columns, r)} for r in rows
             ]
+
+            # Run GPT-based chart analyzer
+            chart_info = run_async(determine_smart_chart_type(rows, columns))
+
+            recommended_cols = chart_info.get("recommended_columns", columns)
+            chart_type = chart_info.get("chart_type", "table")
+            chart_description = chart_info.get("description", "")
+            series_config = chart_info.get("series_config", [])
+
+            # Filtered rows ONLY for visualization
+            chart_rows = [
+                {col: row[col] for col in recommended_cols if col in row}
+                for row in serialized_rows
+            ]
+
+            # Pass both: all rows for table, filtered for chart
+            chart_data = chart_rows
 
             logger.info(f"Determined chart type: {chart_type}")
             logger.info(f"Chart data: {chart_data}")
@@ -951,11 +992,13 @@ def query():
                 'results.html',
                 query=natural_language_query,
                 sql_query=final_sql,
-                columns=columns,
-                rows=rows,
+                columns=columns,                # full columns from DB
+                rows=serialized_rows,           # full data for table
                 schema_info=schema_info,
                 chart_type=chart_type,
-                chart_data=json.dumps(chart_data)
+                chart_description=chart_description,
+                series_config=json.dumps(series_config),
+                chart_data=json.dumps(chart_data)  # filtered for visualization
             )
 
         except Exception as e:
@@ -1113,4 +1156,4 @@ if __name__ == '__main__':
     handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
     
-    app.run(host='0.0.0.0', port=9000, debug=False)
+    app.run(host='0.0.0.0', port=9000, debug=True)
