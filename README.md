@@ -28,39 +28,17 @@ Explore 90+ end-to-end [GenAI Projects](https://www.projectpro.io/accelerator-pr
 
 ---
 
-Vector Embedding version done 
+Current App flow
 
 ---
 
-Database Connection (PostgreSQL / MySQL / SQLite)
-
-- The user enters connection credentials via the web form.
-- The app tests the connection using SQLAlchemy.
-
-Schema Extraction & Enrichment
-
-- It automatically extracts all tables, columns, data types, and relationships (foreign keys).
-- Each table is summarized with GPT (description, column meanings, usage examples, semantic tags, etc.).
-- These summaries are cached locally (schema_summary_cache.json) for reuse.
-
-Vector Embedding & Storage (ChromaDB)
-
-- The app embeds each table’s semantic summary using OpenAI’s text-embedding-3-large model.
-- Embeddings (vector representations) are stored in a local ChromaDB collection for fast semantic search.
-
-Natural Language Query → SQL Conversion
-When a user types a question in plain English:
-
-- The query is embedded and matched against ChromaDB to find the most relevant tables.
-- Sample rows are fetched from those tables to give GPT example data.
-- A GPT model (gpt-4o) is prompted with the schema, summaries, and samples to generate an accurate SQL query.
-
-SQL Execution & Result Display
-
-- The generated SQL is executed safely via SQLAlchemy.
-- The results (columns + rows) are rendered in the browser along with the generated SQL query.
-
-Admin Features
-
-- /admin/refresh-schema allows rebuilding all embeddings and summaries from scratch if the database schema changes.
-- Errors and performance metrics are logged to app.log.
+1️⃣ User inputs DB credentials → Flask connects & validates connection.
+2️⃣ Schema extraction → SQLAlchemy reflects tables, columns, and relationships.
+3️⃣ Table summarization → GPT creates JSON summaries for each table (meaning, usage, tags).
+4️⃣ Vector embeddings → Each table summary is embedded into ChromaDB for semantic search.
+5️⃣ User enters natural query → e.g. "Show top 5 products by sales last month".
+6️⃣ Query rewriting → GPT refines the question for analytical clarity.
+7️⃣ Relevant tables retrieval → ChromaDB finds top-matching tables using embeddings.
+8️⃣ SQL generation → GPT builds context-aware SQL with schema, summaries, and relationships.
+9️⃣ Execution + auto-fix → SQLAlchemy runs it; GPT repairs if errors occur.
+🔟 Visualization → GPT suggests best chart type, builds chart config, and Flask renders data + SQL + chart.

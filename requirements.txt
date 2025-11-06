@@ -20,3 +20,4 @@ posthog
 pydantic
 requests
 urllib3
+pandas
