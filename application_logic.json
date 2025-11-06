@@ -1,4 +1,4 @@
 {
-  "logic": "specific plan IDs 1,2,3,4,5,10,19 those ids means they are leads for Free Users.\nproject table has type P and R and F. P is for projects and R is for recipes and F is for fast projects.\nfor revenue data filter out records from hackerday_enroll with plan IDs 1,2,3,4,5,10,19",
-  "updated": "2025-11-05T15:50:11.218471"
+  "logic": "specific plan IDs 1,2,3,4,5,10,19 those ids means they are leads for Free Users.\nproject table has type P and R and F. P is for projects and R is for recipes and F is for fast projects.\nfor revenue data filter out records from hackerday_enroll with plan IDs 1,2,3,4,5,10,19.",
+  "updated": "2025-11-06T14:58:26.795206"
 }

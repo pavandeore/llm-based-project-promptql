@@ -29,7 +29,7 @@
 #     app.run(host='0.0.0.0', port=9000, debug=True)
 
 
-
+import logging
 from flask import Flask
 import os
 from dotenv import load_dotenv
@@ -41,6 +41,13 @@ from routes.admin_routes import admin_bp
 from error_handlers import register_error_handlers
 
 load_dotenv()
+
+# ✅ Configure logging globally
+logging.basicConfig(
+    level=logging.INFO,  # or DEBUG for more details
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+
 
 def create_app():
     app = Flask(__name__)

@@ -70,6 +70,7 @@
           type="text"
           id="db_name"
           name="db_name"
+          value="dezyre_db"
           required
           class="w-full rounded-lg border border-gray-300 bg-white py-2.5 px-3 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
         />
@@ -83,6 +84,7 @@
             type="text"
             id="db_user"
             name="db_user"
+            value="dezyre_user"
             required
             class="w-full rounded-lg border border-gray-300 bg-white py-2.5 px-3 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
           />
@@ -91,6 +93,7 @@
           <label for="db_password" class="block text-sm font-semibold text-gray-700">Password</label>
           <input
             type="password"
+            value="dezyre123"
             id="db_password"
             name="db_password"
             class="w-full rounded-lg border border-gray-300 bg-white py-2.5 px-3 text-sm shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
@@ -123,4 +126,23 @@
   </div>
 
 </div>
+
+<!-- 🧠 Auto-update port script -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const dbTypeSelect = document.getElementById("db_type");
+    const portInput = document.getElementById("db_port");
+
+    const defaultPorts = {
+      postgresql: "5432",
+      mysql: "3306",
+      sqlite: ""
+    };
+
+    dbTypeSelect.addEventListener("change", function () {
+      const selectedType = dbTypeSelect.value;
+      portInput.value = defaultPorts[selectedType] || "";
+    });
+  });
+</script>
 {% endblock %}
